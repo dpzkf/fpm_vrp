@@ -1,0 +1,15 @@
+.mantine-ScrollArea-viewport .mantine-Select-option {
+  font: var(--font-m);
+  font-weight: 500;
+  padding: 10px 16px;
+}
+
+.mantine-Select-option:hover {
+  background-color: var(--blue-100);
+  color: var(--primary-color);
+}
+
+.mantine-Select-option[aria-selected="true"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+}

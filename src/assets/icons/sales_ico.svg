@@ -1,0 +1,12 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon linear" clip-path="url(#clip0_1246_10527)">
+<path id="Vector" d="M3.3335 5.83398L4.056 15.9532C4.08618 16.3742 4.27501 16.7681 4.58436 17.0554C4.89371 17.3426 5.30053 17.5017 5.72266 17.5007H14.286C14.7081 17.5017 15.1149 17.3426 15.4243 17.0554C15.7336 16.7681 15.9225 16.3742 15.9527 15.9532L16.6752 5.83398H3.34183H3.3335Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M7.0835 5.83333C7.0835 4.45583 8.3335 2.5 10.0002 2.5C11.6668 2.5 12.9168 4.45583 12.9168 5.83333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M7.9165 14.1673C8.26067 14.5523 8.74984 15.0007 9.99984 15.0007C11.2498 15.0007 12.0832 14.2532 12.0832 13.334C12.0832 12.4148 11.2498 12.084 9.99984 11.6673C8.74984 11.2507 8.33317 10.4423 8.33317 10.0007C8.33317 9.08065 9.1665 8.33398 9.99984 8.33398C10.8332 8.33398 11.2498 8.33398 12.0832 9.16732" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_1246_10527">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>
