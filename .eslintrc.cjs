@@ -18,6 +18,7 @@ module.exports = {
     "import",
     "jsx-a11y",
     "prettier",
+    "simple-import-sort",
   ],
   rules: {
     "react-refresh/only-export-components": [
@@ -45,5 +46,21 @@ module.exports = {
     "react/jsx-props-no-spreading": "off",
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "simple-import-sort/imports": [
+      "error", {
+        "groups": [
+          ["^react"],
+          ["^@mantine"],
+          ["^@ui"],
+          ["^@assets"],
+          ["^@pages"],
+          ["^@hooks"],
+          ["^@app"],
+          ["^@?\\w"],
+          ["@/(.*)"],
+          ["^[./]"],
+
+        ],
+      }],
   },
 };

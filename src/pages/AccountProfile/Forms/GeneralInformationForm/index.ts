@@ -1,1 +1,0 @@
-export { GeneralInformationForm } from "./GeneralInformationForm";
