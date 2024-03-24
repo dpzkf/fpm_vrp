@@ -1,10 +1,9 @@
-import { configureStore, ThunkAction, Action, combineReducers } from "@reduxjs/toolkit";
+import { Action, combineReducers, configureStore, ThunkAction } from "@reduxjs/toolkit";
+
 import { api } from "./api";
-import userReducer from "./modules/me/meSlice.ts";
 
 const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
-  userState: userReducer,
 });
 
 export const createStore = () =>
