@@ -1,13 +1,11 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
-import { ETokens } from "../constants/tokens.ts";
-import { getToken } from "../utils/localStorage.ts";
 
 const BASE_API = import.meta.env.VITE_BASE_API_URL || "";
+const MAPB0X_TOKEN = import.meta.env.VITE_BASE_MAPBOX_TOKEN || "";
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_API,
   prepareHeaders: (headers) => {
-    headers.set("Authorization", `Bearer ${getToken(ETokens.AccessToken)}`);
-    // headers.set("Refresh-Token", `${getToken(ETokens.RefreshToken)}`);
+    headers.set("Authorization", `Bearer ${MAPB0X_TOKEN}`);
     return headers;
   },
 });

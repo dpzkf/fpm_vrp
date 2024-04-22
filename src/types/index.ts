@@ -1,5 +1,6 @@
-import { Table } from "@tanstack/react-table";
 import { ReactNode } from "react";
+
+import { Table } from "@tanstack/react-table";
 
 export type TAppRouteItem = {
   /**
@@ -23,7 +24,11 @@ export type TAppRouteItem = {
   makePath: (...arguments_: (number | string)[]) => string;
 };
 
-export type TAppRoutes = {};
+export type TAppRoutes = {
+  App: {
+    Dashboard: { Root: TAppRouteItem };
+  };
+};
 
 export type TModal = {
   opened: boolean;
