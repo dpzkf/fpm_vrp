@@ -3,11 +3,7 @@ import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 const BASE_API = import.meta.env.VITE_BASE_API_URL || "";
 const MAPB0X_TOKEN = import.meta.env.VITE_BASE_MAPBOX_TOKEN || "";
 const baseQuery = fetchBaseQuery({
-  baseUrl: BASE_API,
-  prepareHeaders: (headers) => {
-    headers.set("Authorization", `Bearer ${MAPB0X_TOKEN}`);
-    return headers;
-  },
+  baseUrl: `${BASE_API}?access_token=${MAPB0X_TOKEN}`,
 });
 
 const baseQueryWithRetry = retry(baseQuery, { maxRetries: 1 });

@@ -1,6 +1,5 @@
-import { SvgIcon } from "../SvgIcon";
-
 import { LOGO_ICON } from "../../../assets/icons";
+import { SvgIcon } from "../SvgIcon";
 
 export const Logo = () => {
   return (
