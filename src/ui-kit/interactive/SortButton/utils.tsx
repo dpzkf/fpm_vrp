@@ -1,8 +1,7 @@
-import { ESortDirections } from "../../../constants/sortDirections.ts";
-
+import { IconChevronDown, IconChevronUp, IconSelector } from "@tabler/icons-react";
 import { SortDirection } from "@tanstack/react-table";
 
-import { IconChevronDown, IconChevronUp, IconSelector } from "@tabler/icons-react";
+import { ESortDirections } from "../../../constants/sortDirections.ts";
 
 export const getSortIcon = (order: SortDirection | false) => {
   if (!order) {

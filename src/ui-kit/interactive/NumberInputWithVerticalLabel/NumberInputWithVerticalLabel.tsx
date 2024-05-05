@@ -1,5 +1,7 @@
-import { Grid, Input as InputLib, NumberInput, NumberInputProps } from "@mantine/core";
 import { forwardRef, ReactNode } from "react";
+
+import { Grid, Input as InputLib, NumberInput, NumberInputProps } from "@mantine/core";
+
 import * as Styled from "./styles";
 
 type TInputProps = NumberInputProps & {

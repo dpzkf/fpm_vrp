@@ -1,6 +1,7 @@
 import { Action, combineReducers, configureStore, ThunkAction } from "@reduxjs/toolkit";
 
 import { api } from "./api";
+import { rtkQueryErrorLogger } from "./middleware.ts";
 
 const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
@@ -9,7 +10,8 @@ const rootReducer = combineReducers({
 export const createStore = () =>
   configureStore({
     reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(api.middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({ serializableCheck: false }).concat(api.middleware, rtkQueryErrorLogger),
   });
 
 export const store = createStore();

@@ -10,7 +10,7 @@
     --font-line-l: 24px;
     --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
 
-    --primary-color: #0278de;
+    --primary-color: #576375;
     --primary-navy-900: #2a2564;
     --text-body: #647282;
     --primary-text-color: #181818;
@@ -20,7 +20,7 @@
     --gray-footer-text-color: #67757C;
     --button-outlined-border-color: #C3CFE0;
 
-    --secondary-base-blue: #364fc7;
+    --secondary-color: #3f5b56;
     --tooltip-gray: #1b2733cc;
     --gray-700: #424242;
     --gray-600: #e8e8e8;

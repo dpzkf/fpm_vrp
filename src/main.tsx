@@ -13,6 +13,8 @@ import { BREAKPOINTS, MANTINE_SCALE } from "./constants";
 import { MODAL_CONFIG, MODAL_PROPS } from "./constants/modalConfig.ts";
 
 import "@mantine/core/styles.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "./index.css";
 
 const theme = createTheme({

@@ -1,17 +1,14 @@
-import { FC } from "react";
-import { TextProps } from "@mantine/core";
-import * as Styled from "./styles";
+import { FC, PropsWithChildren } from "react";
 
-type TTextProps = React.HTMLAttributes<HTMLParagraphElement> &
-  TextProps & {
-    size?: string;
-  };
+import { Text as TextLib, TextProps } from "@mantine/core";
+
+type TTextProps = TextProps & PropsWithChildren;
 
 export const Text: FC<TTextProps> = (props) => {
-  const { children, size = "16px", ...restProps } = props;
+  const { children, size = "1rem", ...restProps } = props;
   return (
-    <Styled.Text size={size} {...restProps}>
+    <TextLib size={size} ff="var(-font-family-main)" lh="135%" {...restProps}>
       {children}
-    </Styled.Text>
+    </TextLib>
   );
 };

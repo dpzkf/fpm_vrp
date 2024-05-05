@@ -1,16 +1,21 @@
+import { ReactNode } from "react";
+
+import { Button as ButtonLib } from "@mantine/core";
+
 import styled, { css } from "styled-components";
-import { Button as ButtonLib, ButtonProps } from "@mantine/core";
+
 import { variant } from "./Button.tsx";
 
-type stylesProps = ButtonProps & {
+export type stylesProps = {
   size?: "md" | "xl";
-  fullWidth?: boolean;
+  $fullWidth?: boolean;
   variant?: variant;
+  children: ReactNode;
 };
 
 export const Button = styled(ButtonLib)<stylesProps>`
   padding: ${({ size }) => (size === "xl" ? "12px 22px" : "7px 16px")};
-  width: ${({ fullWidth }) => (fullWidth ? "100%" : "unset")};
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "unset")};
   font-size: var(--font-size-l);
   font-weight: 600;
   line-height: 18.5px;

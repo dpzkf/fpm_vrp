@@ -1,6 +1,8 @@
-import { ReactNode, forwardRef } from "react";
+import { forwardRef, ReactNode } from "react";
+
 import { PasswordInput as InputLib, PasswordInputProps } from "@mantine/core";
-import { IconEyeOff, IconEye } from "@tabler/icons-react";
+
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
 
 import * as Styled from "./styles";
 

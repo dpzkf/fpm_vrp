@@ -1,5 +1,6 @@
-import styled from "styled-components";
 import { Textarea as TextareaLib } from "@mantine/core";
+
+import styled from "styled-components";
 
 export const Textarea = styled(TextareaLib)`
   display: flex;

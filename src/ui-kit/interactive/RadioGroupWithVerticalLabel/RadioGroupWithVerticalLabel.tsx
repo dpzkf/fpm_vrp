@@ -1,5 +1,7 @@
-import { Grid, Group, Input as InputLib, RadioGroupProps } from "@mantine/core";
 import { forwardRef, ReactNode } from "react";
+
+import { Grid, Group, Input as InputLib, RadioGroupProps } from "@mantine/core";
+
 import * as Styled from "./styles";
 
 type TInputProps = RadioGroupProps & {

@@ -1,5 +1,6 @@
-import { differenceInSeconds } from "date-fns";
 import { useEffect, useState } from "react";
+
+import { differenceInSeconds } from "date-fns";
 import { useCountdown, useLocalStorage } from "usehooks-ts";
 
 type TCountdownOptions = {
@@ -51,20 +52,10 @@ type TCountdownReturn = {
   resetCountdown: () => void;
 };
 
-export const useStorageCountdown = (
-  options: TCountdownOptions
-): TCountdownReturn => {
-  const {
-    name,
-    minutes = 2,
-    intervalMs = 1000,
-    skipStoredTime = false,
-  } = options;
+export const useStorageCountdown = (options: TCountdownOptions): TCountdownReturn => {
+  const { name, minutes = 2, intervalMs = 1000, skipStoredTime = false } = options;
 
-  const [deadlineDate, setDeadlineDate] = useLocalStorage<number | null>(
-    name,
-    null
-  );
+  const [deadlineDate, setDeadlineDate] = useLocalStorage<number | null>(name, null);
 
   const [isCounting, setIsCounting] = useState<boolean>(true);
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -133,9 +124,7 @@ export const useStorageCountdown = (
     isCounting,
     isReady,
     count,
-    time: `${Math.floor(count / 60)}:${
-      count % 60 < 10 ? `0${count % 60}` : count % 60
-    }`,
+    time: `${Math.floor(count / 60)}:${count % 60 < 10 ? `0${count % 60}` : count % 60}`,
     startCountdown: start,
     resetCountdown: reset,
   };

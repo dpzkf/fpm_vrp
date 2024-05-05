@@ -1,5 +1,6 @@
-import styled from "styled-components";
 import { Checkbox as CheckboxLib } from "@mantine/core";
+
+import styled from "styled-components";
 
 export const Checkbox = styled(CheckboxLib)`
   .mantine-Checkbox-input {
