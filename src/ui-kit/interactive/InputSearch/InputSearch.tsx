@@ -1,6 +1,8 @@
-import { IconSearch } from "@tabler/icons-react";
-import { Input as InputLib } from "@mantine/core";
 import { ChangeEvent, forwardRef } from "react";
+
+import { Input as InputLib } from "@mantine/core";
+
+import { IconSearch } from "@tabler/icons-react";
 
 import * as Styled from "./styles";
 

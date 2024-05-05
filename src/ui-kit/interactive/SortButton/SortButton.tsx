@@ -1,9 +1,10 @@
 import { FC, ReactNode } from "react";
 
 import { Center, Group, UnstyledButton } from "@mantine/core";
-import { SortDirection } from "@tanstack/react-table";
-import * as Styled from "./styles";
 
+import { SortDirection } from "@tanstack/react-table";
+
+import * as Styled from "./styles";
 import { getSortIcon } from "./utils.tsx";
 
 type TSortButton = {

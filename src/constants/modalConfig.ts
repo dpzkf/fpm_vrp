@@ -1,5 +1,6 @@
 import { ContextModalProps } from "@mantine/modals";
-import { DeleteModal, ConfirmModal } from "../ui-kit";
+
+import { ConfirmModal, DeleteModal } from "../ui-kit";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MODAL_CONFIG: Record<string, React.FC<ContextModalProps<any>>> = {

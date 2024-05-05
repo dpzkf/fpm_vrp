@@ -1,7 +1,8 @@
 import { FC } from "react";
-import * as Styled from "./styles";
 
 import type { TabsProps } from "@mantine/core";
+
+import * as Styled from "./styles";
 
 type TTabsProps = TabsProps;
 

@@ -1,5 +1,7 @@
-import { Grid, Input as InputLib, InputProps } from "@mantine/core";
 import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
+
+import { Grid, Input as InputLib, InputProps } from "@mantine/core";
+
 import * as Styled from "./styles";
 
 type TInputProps = InputHTMLAttributes<HTMLInputElement> &

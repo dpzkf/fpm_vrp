@@ -1,5 +1,6 @@
-import styled from "styled-components";
 import { Select } from "@mantine/core";
+
+import styled from "styled-components";
 
 export const Selectbox = styled(Select)`
   display: flex;

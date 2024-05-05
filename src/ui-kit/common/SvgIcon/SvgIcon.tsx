@@ -11,15 +11,8 @@ type SvgIconProps = React.SVGAttributes<SVGElement> & {
 };
 
 const SvgIconBase = (
-  {
-    children,
-    component = "svg",
-    viewBox = "0 0 24 24",
-    inheritViewBox = true,
-    titleAccess,
-    ...svgProps
-  }: SvgIconProps,
-  ref: Ref<SVGSVGElement>
+  { children, component = "svg", viewBox = "0 0 24 24", inheritViewBox = true, titleAccess, ...svgProps }: SvgIconProps,
+  ref: Ref<SVGSVGElement>,
 ) => {
   return (
     <Styled.SvgIconRoot

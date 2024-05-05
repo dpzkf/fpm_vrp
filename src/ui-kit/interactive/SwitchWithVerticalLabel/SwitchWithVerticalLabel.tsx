@@ -1,5 +1,7 @@
-import { Flex, Input as InputLib, Switch as SwitchLib } from "@mantine/core";
 import { forwardRef, ReactNode } from "react";
+
+import { Flex, Input as InputLib, Switch as SwitchLib } from "@mantine/core";
+
 import * as Styled from "./styles.ts";
 
 type TSwitchProps = {

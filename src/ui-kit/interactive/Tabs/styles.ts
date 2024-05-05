@@ -1,5 +1,6 @@
-import { styled } from "styled-components";
 import { Tabs as TabsLib } from "@mantine/core";
+
+import { styled } from "styled-components";
 
 export const Tabs = styled(TabsLib)`
   .mantine-Tabs-tabLabel {

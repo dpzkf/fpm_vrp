@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 import type { SelectProps } from "@mantine/core";
 
 import * as Styled from "./styles";
+
 import "./selectbox.css";
 
 type TSelectBoxProps = SelectProps;

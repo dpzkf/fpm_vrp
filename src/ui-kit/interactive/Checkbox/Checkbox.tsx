@@ -1,5 +1,7 @@
-import type { CheckboxProps } from "@mantine/core";
 import { forwardRef } from "react";
+
+import type { CheckboxProps } from "@mantine/core";
+
 import * as Styled from "./styles";
 
 type TCheckboxProps = CheckboxProps;
