@@ -5,9 +5,9 @@ export const AppRoute: TAppRoutes = {
     Dashboard: {
       Root: {
         name: "Dashboard",
-        path: "/",
+        path: "/dashboard",
         key: "dashboard",
-        makePath: () => "/",
+        makePath: () => "/dashboard",
       },
     },
   },
