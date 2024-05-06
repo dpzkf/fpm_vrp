@@ -1,3 +1,5 @@
+import { IS_MOBILE } from "@assets/styles/layout.ts";
+
 import styled from "styled-components";
 
 export const MapWrapper = styled.div`
@@ -20,4 +22,10 @@ export const LogoWrapper = styled.div`
   top: 0;
   left: 0;
   margin: 12px;
+
+  ${IS_MOBILE} {
+    top: unset;
+    bottom: 0;
+    margin-bottom: 28px;
+  }
 `;
