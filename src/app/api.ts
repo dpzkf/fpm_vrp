@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import qs from "qs";
 
+export const MAPB0X_TOKEN = import.meta.env.VITE_BASE_MAPBOX_TOKEN || "";
+
 const BASE_API = import.meta.env.VITE_BASE_API_URL || "";
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_API,

@@ -1,14 +1,14 @@
-import { api } from "@app/api.ts";
+import { api, MAPB0X_TOKEN } from "@app/api.ts";
 
-import { TRetrieveRoutingProblemResponse, TSubmitRoutingProblemBody, TSubmitRoutingProblemResponse } from "./types.ts";
+import { TRetrieveRoutingProblemResponse, TSubmitRoutingProblemBody, TSubmitRoutingProblemResponse } from "./utils";
 
-const MAPB0X_TOKEN = import.meta.env.VITE_BASE_MAPBOX_TOKEN || "";
+const BASE_URL = "/optimized-trips/v2";
 
-export const vehicleRoutingApi = api.injectEndpoints({
+export const optimizationApi = api.injectEndpoints({
   endpoints: (build) => ({
     getResolvedVehicleRoutingProblem: build.query<TRetrieveRoutingProblemResponse, { id: string }>({
       query: ({ id }) => ({
-        url: `/${id}`,
+        url: `${BASE_URL}/${id}`,
         params: {
           access_token: MAPB0X_TOKEN,
         },
@@ -16,7 +16,7 @@ export const vehicleRoutingApi = api.injectEndpoints({
     }),
     submitVehicleRoutingProblem: build.mutation<TSubmitRoutingProblemResponse, TSubmitRoutingProblemBody>({
       query: (body) => ({
-        url: ``,
+        url: BASE_URL,
         method: "POST",
         body,
         params: {
@@ -27,4 +27,4 @@ export const vehicleRoutingApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetResolvedVehicleRoutingProblemQuery, useSubmitVehicleRoutingProblemMutation } = vehicleRoutingApi;
+export const { useSubmitVehicleRoutingProblemMutation, useLazyGetResolvedVehicleRoutingProblemQuery } = optimizationApi;

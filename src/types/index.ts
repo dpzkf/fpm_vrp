@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
 
-import { Table } from "@tanstack/react-table";
-
 export type TAppRouteItem = {
   /**
    * Path to the page route.
@@ -37,10 +35,6 @@ export type TModal = {
   headerText?: string;
   buttonText?: string;
   handleButtonClick?: () => void;
-};
-
-export type TTable<T> = {
-  table: Table<T>;
 };
 
 export type TModalForm = {
