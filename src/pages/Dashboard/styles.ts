@@ -16,11 +16,20 @@ export const LogoWrapper = styled.div`
   top: 0;
   left: 0;
   margin: 12px;
+  margin-left: 48px;
 
   ${IS_MOBILE} {
-    top: unset;
-    bottom: 0;
-    margin-bottom: 28px;
+    margin-left: unset;
+    left: unset;
+    right: 0;
   }
 `;
-export const ContentWrapper = styled.div``;
+export const ButtonWrapper = styled.div`
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+`;
