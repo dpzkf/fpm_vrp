@@ -75,7 +75,7 @@ export const Dashboard = () => {
 
   const generateLineString = () => {
     if (directionsData) {
-      return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry))]);
+      return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry, 6))]);
     }
     const coordinates = markers.slice(1).reduce((acc: number[][][], marker) => {
       acc.push([
@@ -133,9 +133,9 @@ export const Dashboard = () => {
           onClick={handleClick}
           {...viewState}
         >
-          <GeolocateControl position="top-left" />
-          <FullscreenControl position="top-left" />
-          <NavigationControl position="top-left" />
+          <GeolocateControl position="top-right" />
+          <FullscreenControl position="top-right" />
+          <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
           {markers.map((marker, index) => (
             <Marker

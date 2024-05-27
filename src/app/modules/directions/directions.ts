@@ -10,7 +10,7 @@ export const directionsApi = api.injectEndpoints({
         url: `${BASE_URL}/${waypoints}`,
         params: {
           overview: "full",
-          geometries: "polyline",
+          geometries: "polyline6",
           access_token: MAPB0X_TOKEN,
         },
       }),
