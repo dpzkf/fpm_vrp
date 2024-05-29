@@ -12,6 +12,7 @@ import { GlobalStyles } from "./assets/styles/globalStyles.ts";
 import { BREAKPOINTS, MANTINE_SCALE } from "./constants";
 import { MODAL_CONFIG, MODAL_PROPS } from "./constants/modalConfig.ts";
 
+import "@mantine/core/styles.css";
 import "./index.css";
 
 const theme = createTheme({

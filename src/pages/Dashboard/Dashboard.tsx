@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import InteractiveMap, {
   FullscreenControl,
   GeolocateControl,
@@ -12,12 +12,6 @@ import InteractiveMap, {
   Source,
 } from "react-map-gl";
 
-import { Flex } from "@mantine/core";
-
-import { Button } from "@ui/interactive/Button";
-
-import { TITLE_LOGO_ICO } from "@assets/icons";
-
 import {
   useLazyGetResolvedVehicleRoutingProblemQuery,
   useLazyGetReverseGeocodingQuery,
@@ -26,19 +20,25 @@ import {
 import { useGetDirectionsQuery } from "@app/modules/directions";
 import { isRetrieveRoutingProblemResponseWithStatus } from "@app/modules/optimization/utils";
 
+import { ActiveTabs, Sidebar } from "@components/Sidebar";
+import { TVehicleRoutingContext } from "@context/types.ts";
+import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 import polyline from "@mapbox/polyline";
 import { feature, featureCollection } from "@turf/helpers";
 import { VIEW_STATE } from "@utils/constants.ts";
 import uniqueId from "lodash.uniqueid";
 
+import { LocationType, TLocation } from "../../types";
 import * as Styled from "./styles.ts";
-import { adaptDirectionsData, adaptSubmitData, TMarkers, TViewState } from "./utils";
+import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
 
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
-  const [markers, setMarkers] = useState<TMarkers[]>([]);
+  const { activeTab, addLocation, locations, updateLocation } = useContext(
+    VehicleRoutingContext,
+  ) as TVehicleRoutingContext;
 
   const [submitVrp, { data: submitVrpData, isLoading: submitVrpIsLoading }] = useSubmitVehicleRoutingProblemMutation();
   const [triggerResolvedVrp, { data: resolvedVrpData, isFetching: resolvedVrpDataIsLoading }] =
@@ -77,55 +77,69 @@ export const Dashboard = () => {
     if (directionsData) {
       return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry, 6))]);
     }
-    const coordinates = markers.slice(1).reduce((acc: number[][][], marker) => {
-      acc.push([
-        [markers[0].longitude, markers[0].latitude],
-        [marker.longitude, marker.latitude],
-      ]);
-      return acc;
-    }, []);
-
-    const geometry = {
-      type: "MultiLineString",
-      coordinates,
-    };
-    return feature(geometry);
+    // const coordinates = markers.slice(1).reduce((acc: number[][][], marker) => {
+    //   acc.push([markers[0].coordinates, marker.coordinates]);
+    //   return acc;
+    // }, []);
+    //
+    // const geometry = {
+    //   type: "MultiLineString",
+    //   coordinates,
+    // };
+    // return feature(geometry);
   };
 
   const handleClick = async (e: MapLayerMouseEvent) => {
-    if (markers.length > 7) return;
+    if (activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES) return;
 
-    if (resolvedVrpData) return;
+    const { lng, lat } = e.lngLat;
+    const locationId = uniqueId("location_");
+    const {
+      features: [response],
+    } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
 
+    if (activeTab === ActiveTabs.LOCATIONS_WAREHOUSES) {
+      return addLocation({
+        coordinates: [lng, lat],
+        name: response?.properties?.name || locationId,
+        id: locationId,
+        type: LocationType.WAREHOUSE,
+      });
+    }
+    addLocation({
+      coordinates: [lng, lat],
+      name: response?.properties?.name || locationId,
+      id: locationId,
+      type: LocationType.DROP_OFF,
+    });
+  };
+
+  const handleDrag = async (e: MarkerDragEvent, locationId: string) => {
     const { lng, lat } = e.lngLat;
     const {
       features: [response],
     } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
-    setMarkers((markers) => [
-      ...markers,
-      { longitude: lng, latitude: lat, name: response?.properties?.name || uniqueId("location_") },
-    ]);
-  };
 
-  const handleDrag = (e: MarkerDragEvent, index: number) => {
-    const { lng, lat } = e.lngLat;
-    const updatedMarkers = [...markers];
-    updatedMarkers[index] = { ...markers[index], longitude: lng, latitude: lat };
-    setMarkers(updatedMarkers);
+    const updatedLocation: Partial<TLocation> = {
+      coordinates: [lng, lat],
+      name: response?.properties?.name || locationId,
+    };
+    updateLocation(locationId, updatedLocation);
   };
 
   const findSolution = async () => {
-    await submitVrp(adaptSubmitData(markers)).unwrap();
+    await submitVrp(adaptSubmitData(locations)).unwrap();
   };
 
   return (
-    <>
+    <Styled.Wrapper>
+      <Sidebar />
       <Styled.MapWrapper>
         <InteractiveMap
           reuseMaps
           ref={mapRef}
           mapLib={import("mapbox-gl")}
-          style={{ width: "100dvw", height: "100dvh" }}
+          style={{ width: "100%", height: "100dvh" }}
           mapStyle={import.meta.env.VITE_BASE_MAPBOX_STYLE || ""}
           projection={{ name: "globe" }}
           mapboxAccessToken={import.meta.env.VITE_BASE_MAPBOX_TOKEN || ""}
@@ -137,16 +151,18 @@ export const Dashboard = () => {
           <FullscreenControl position="top-right" />
           <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
-          {markers.map((marker, index) => (
+          {locations.map((marker) => (
             <Marker
               {...marker}
-              draggable={!resolvedVrpData}
-              onDragEnd={(e) => handleDrag(e, index)}
-              color={!index ? "var(--warehouse-color)" : undefined}
-              key={`marker-${index}`}
+              longitude={marker.coordinates[0]}
+              latitude={marker.coordinates[1]}
+              draggable={activeTab === ActiveTabs.LOCATIONS_WAREHOUSES || activeTab === ActiveTabs.LOCATIONS_DROP_OFFS}
+              onDragEnd={(e) => handleDrag(e, marker.id)}
+              color={marker.type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
+              key={uniqueId("marker_")}
             />
           ))}
-          {markers.length > 1 && (
+          {locations.length > 1 && (
             <Source id="polylineLayer" type="geojson" data={generateLineString()}>
               <Layer
                 id="lineLayer"
@@ -179,33 +195,7 @@ export const Dashboard = () => {
             </Source>
           )}
         </InteractiveMap>
-        <Styled.LogoWrapper>
-          <TITLE_LOGO_ICO />
-        </Styled.LogoWrapper>
-        <Styled.ButtonWrapper>
-          <Flex gap={16} align="center" justify="center" display="flex">
-            {markers.length > 1 && (
-              <div>
-                <Button disabled={!!resolvedVrpData || resolvedVrpDataIsLoading} onClick={findSolution}>
-                  Знайти рішення
-                </Button>
-              </div>
-            )}
-            {!!markers.length && (
-              <div>
-                <Button
-                  disabled={!!resolvedVrpData || resolvedVrpDataIsLoading}
-                  onClick={() => {
-                    setMarkers([]);
-                  }}
-                >
-                  Видалити маркери
-                </Button>
-              </div>
-            )}
-          </Flex>
-        </Styled.ButtonWrapper>
       </Styled.MapWrapper>
-    </>
+    </Styled.Wrapper>
   );
 };

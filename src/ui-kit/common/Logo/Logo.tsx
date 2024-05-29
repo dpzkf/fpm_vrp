@@ -4,7 +4,7 @@ import { SvgIcon } from "../SvgIcon";
 
 export const Logo = () => {
   return (
-    <div>
+    <div style={{ width: "200px" }}>
       <SvgIcon component={TITLE_LOGO_ICO} />
     </div>
   );

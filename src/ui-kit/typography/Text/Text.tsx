@@ -1,14 +1,24 @@
 import { FC, PropsWithChildren } from "react";
 
-import { Text as TextLib, TextProps } from "@mantine/core";
+import { createPolymorphicComponent, TextProps } from "@mantine/core";
 
-type TTextProps = TextProps & PropsWithChildren;
+import * as Styled from "./styles.ts";
+import { TText } from "./styles.ts";
+
+type TTextProps = TextProps &
+  PropsWithChildren & {
+    //size in px
+    textSize?: number;
+    bulletColor?: string;
+  };
+
+const StyledText = createPolymorphicComponent<"p", TextProps & TText>(Styled.Text);
 
 export const Text: FC<TTextProps> = (props) => {
-  const { children, size = "1rem", ...restProps } = props;
+  const { children, textSize = 16, bulletColor = "", ...restProps } = props;
   return (
-    <TextLib size={size} ff="var(-font-family-main)" lh="135%" {...restProps}>
+    <StyledText {...restProps} $textSize={textSize} $bulletColor={bulletColor}>
       {children}
-    </TextLib>
+    </StyledText>
   );
 };

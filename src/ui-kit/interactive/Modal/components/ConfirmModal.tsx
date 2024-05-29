@@ -1,12 +1,12 @@
 import { FC } from "react";
 
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Button } from "@mantine/core";
 import { Divider, Flex, Group } from "@mantine/core";
 import { ContextModalProps } from "@mantine/modals";
 
 import { IconX } from "@tabler/icons-react";
 
-import { Button, Text } from "../../../index.ts";
+import { Text } from "../../../index.ts";
 import * as Styled from "../styles.ts";
 
 type TConfirmModal = {
