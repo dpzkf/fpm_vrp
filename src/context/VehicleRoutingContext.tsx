@@ -5,8 +5,9 @@ import { TShipments, TVehicles } from "@app/modules";
 import { TDirection } from "@app/modules/directions";
 
 import { ActiveTabs } from "@components/Sidebar";
+import uniqueId from "lodash.uniqueid";
 
-import { TLocation } from "../types";
+import { LocationType, TLocation } from "../types";
 import {
   TContextLocations,
   TContextShipments,
@@ -19,7 +20,20 @@ export const VehicleRoutingContext = createContext<TVehicleRoutingContext | null
 
 export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ActiveTabs>(ActiveTabs.LOCATIONS_WAREHOUSES);
-  const [locations, setLocations] = useState<TContextLocations>([]);
+  const [locations, setLocations] = useState<TContextLocations>([
+    {
+      name: "Перша Дачна Вулиця 80",
+      coordinates: [35.0369429788974, 48.428788936916646],
+      id: uniqueId("location-warehouse_"),
+      type: LocationType.WAREHOUSE,
+    },
+    {
+      name: "Сєрова Вулиця 2",
+      coordinates: [35.03710623364512, 48.46818956311154],
+      type: LocationType.DROP_OFF,
+      id: uniqueId("location-drop-off_"),
+    },
+  ]);
   const [shipments, setShipments] = useState<TContextShipments>([]);
   const [vehicles, setVehicles] = useState<TContextVehicles>([]);
   const [solution, setSolution] = useState<TContextSolution>(null);
@@ -28,7 +42,16 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
     setLocations((prevState) => [...prevState, { ...location }]);
   };
   const updateLocation = (id: string, location: Partial<TLocation>) => {
-    setLocations((prevState) => prevState.map((el) => (el.id === id ? { ...el, ...location } : el)));
+    const locationIndex = locations.findIndex((location) => location.id === id);
+
+    if (locationIndex !== -1) {
+      const updatedLocations = [...locations];
+      updatedLocations[locationIndex] = { ...updatedLocations[locationIndex], ...location };
+      setLocations(updatedLocations);
+    }
+  };
+  const deleteLocation = (id: string) => {
+    setLocations((prevState) => prevState.filter((el) => el.id !== id));
   };
   const addShipments = (shipment: TShipments) => {
     setShipments((prevState) => [...prevState, shipment]);
@@ -50,6 +73,7 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
         changeActiveTab: setActiveTab,
         addLocation,
         updateLocation,
+        deleteLocation,
         addShipments,
         addVehicle,
         addSolution,

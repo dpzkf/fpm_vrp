@@ -25,7 +25,7 @@ import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 import polyline from "@mapbox/polyline";
 import { feature, featureCollection } from "@turf/helpers";
-import { VIEW_STATE } from "@utils/constants.ts";
+import { VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
 
 import { LocationType, TLocation } from "../../types";
@@ -116,15 +116,19 @@ export const Dashboard = () => {
 
   const handleDrag = async (e: MarkerDragEvent, locationId: string) => {
     const { lng, lat } = e.lngLat;
+    const updatedLocation: Partial<TLocation> = {
+      coordinates: [lng, lat],
+    };
+    updateLocation(locationId, updatedLocation);
+
     const {
       features: [response],
     } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
-
-    const updatedLocation: Partial<TLocation> = {
-      coordinates: [lng, lat],
+    const updatedLocationName: Partial<TLocation> = {
+      ...updatedLocation,
       name: response?.properties?.name || locationId,
     };
-    updateLocation(locationId, updatedLocation);
+    updateLocation(locationId, updatedLocationName);
   };
 
   const findSolution = async () => {
@@ -151,15 +155,14 @@ export const Dashboard = () => {
           <FullscreenControl position="top-right" />
           <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
-          {locations.map((marker) => (
+          {locations.map(({ coordinates, id, type }) => (
             <Marker
-              {...marker}
-              longitude={marker.coordinates[0]}
-              latitude={marker.coordinates[1]}
+              longitude={coordinates[0]}
+              latitude={coordinates[1]}
               draggable={activeTab === ActiveTabs.LOCATIONS_WAREHOUSES || activeTab === ActiveTabs.LOCATIONS_DROP_OFFS}
-              onDragEnd={(e) => handleDrag(e, marker.id)}
-              color={marker.type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
-              key={uniqueId("marker_")}
+              onDragEnd={(e) => handleDrag(e, id)}
+              color={type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
+              key={id}
             />
           ))}
           {locations.length > 1 && (

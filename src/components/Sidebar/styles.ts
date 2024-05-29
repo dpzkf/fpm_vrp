@@ -5,6 +5,7 @@ export const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 8px;
 
   border-top: 1px solid #ddd;
 `;

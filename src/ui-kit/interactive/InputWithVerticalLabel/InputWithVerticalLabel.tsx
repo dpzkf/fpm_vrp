@@ -24,7 +24,7 @@ export const InputWithVerticalLabel = forwardRef<HTMLInputElement, TInputProps>(
         </Styled.Wrapper>
       </Grid.Col>
       <Grid.Col span={8}>
-        <Styled.Wrapper fullWidth={fullWidth}>
+        <Styled.Wrapper $fullWidth={fullWidth}>
           <InputLib.Wrapper required={required} error={error}>
             <InputLib ref={reference} error={error} disabled={disabled} {...restProperties} />
           </InputLib.Wrapper>

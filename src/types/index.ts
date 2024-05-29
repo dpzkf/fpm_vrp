@@ -10,6 +10,7 @@ export type TLocation = {
   coordinates: [number, number];
   name: string;
   type: LocationType;
+  isFocused?: boolean;
 };
 
 export type TModal = {

@@ -7,7 +7,6 @@ export * from "./Modal";
 export * from "./NumberInputWithVerticalLabel";
 export * from "./RadioGroupWithVerticalLabel";
 export * from "./Selectbox";
-export * from "./SortButton";
 export * from "./Switch";
 export * from "./SwitchWithVerticalLabel";
 export * from "./Tabs";

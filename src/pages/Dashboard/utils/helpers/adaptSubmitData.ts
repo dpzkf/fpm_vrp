@@ -1,8 +1,8 @@
 import { TLocations, TShipments, TSubmitRouting, TVehicles } from "@app/modules";
 
-import { TMarkers } from "../index.ts";
+import { TLocation } from "types";
 
-export const adaptSubmitData = (data: TMarkers[]): TSubmitRouting => {
+export const adaptSubmitData = (data: TLocation[]): TSubmitRouting => {
   const locations: TLocations[] = data.map(({ name, coordinates }) => ({
     name,
     coordinates,

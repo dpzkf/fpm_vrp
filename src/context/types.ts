@@ -19,6 +19,7 @@ export type TVehicleRoutingContext = {
   changeActiveTab: (value: ActiveTabs) => void;
   addLocation: (location: TLocation) => void;
   updateLocation: (id: string, location: Partial<TLocation>) => void;
+  deleteLocation: (id: string) => void;
   addShipments: (shipment: TShipments) => void;
   addVehicle: (vehicle: TVehicles) => void;
   addSolution: (solution: TDirection) => void;

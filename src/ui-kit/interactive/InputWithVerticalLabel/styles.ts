@@ -2,12 +2,12 @@ import styled from "styled-components";
 
 interface InputWrapperProps {
   error?: string;
-  fullWidth?: boolean;
+  $fullWidth?: boolean;
 }
 
 export const Wrapper = styled.div<InputWrapperProps>`
   width: 100%;
-  max-width: ${({ fullWidth }) => (fullWidth ? "unset" : "300px")};
+  max-width: ${({ $fullWidth }) => ($fullWidth ? "unset" : "300px")};
 
   & input {
     border-radius: var(--rounded-xs);
