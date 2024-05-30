@@ -30,7 +30,7 @@ import uniqueId from "lodash.uniqueid";
 
 import { LocationType, TLocation } from "../../types";
 import * as Styled from "./styles.ts";
-import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
+import { adaptDirectionsData, TViewState } from "./utils";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
@@ -123,9 +123,9 @@ export const Dashboard = () => {
     [updateLocation, triggerReverseGeocoding],
   );
 
-  const findSolution = async () => {
-    await submitVrp(adaptSubmitData(locations)).unwrap();
-  };
+  // const findSolution = async () => {
+  //   await submitVrp(adaptSubmitData(locations)).unwrap();
+  // };
 
   return (
     <Styled.Wrapper>
