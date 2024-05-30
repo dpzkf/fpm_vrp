@@ -6,15 +6,16 @@ import { z } from "zod";
 import { shipmentsFormSchema } from "../Form";
 
 export const formatData = (shipment: z.infer<typeof shipmentsFormSchema>): Partial<TShipments> => {
-  const size = shipment?.size ? { boxes: shipment.size as number } : undefined;
+  const { earliest, latest, size, ...restShipmentData } = shipment;
+  const sizeParam = size ? { boxes: shipment.size as number } : undefined;
   const dropoff_times: [TTimes] | undefined =
-    shipment?.latest && shipment?.earliest
+    latest && earliest
       ? [
           {
-            earliest: convertTimeToISOString(shipment.earliest as string),
-            latest: convertTimeToISOString(shipment.latest as string),
+            earliest: convertTimeToISOString(earliest as string),
+            latest: convertTimeToISOString(latest as string),
           },
         ]
       : undefined;
-  return { ...shipment, size, dropoff_times };
+  return { ...restShipmentData, size: sizeParam, dropoff_times };
 };

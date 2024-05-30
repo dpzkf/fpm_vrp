@@ -39,6 +39,8 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
   const [vehicles, setVehicles] = useState<TContextVehicles>([]);
   const [solution, setSolution] = useState<TContextSolution>(null);
 
+  console.log(shipments);
+
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);
   }, []);
