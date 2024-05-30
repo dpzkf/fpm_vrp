@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from "react-hook-form";
 
-import { InputWithVerticalLabel } from "@ui/interactive";
+import { TextInput } from "@mantine/core";
 
 export const LocationForm = () => {
   const form = useFormContext();
@@ -9,14 +9,7 @@ export const LocationForm = () => {
       control={form.control}
       name="name"
       render={({ field, fieldState: { error } }) => (
-        <InputWithVerticalLabel
-          fullWidth
-          required
-          label="User Name"
-          placeholder="Enter user name"
-          error={error?.message}
-          {...field}
-        />
+        <TextInput required label="Назва Вулиці" placeholder="Введіть назву вулиці" error={error?.message} {...field} />
       )}
     />
   );

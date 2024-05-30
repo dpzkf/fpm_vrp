@@ -20,7 +20,11 @@ export type TVehicleRoutingContext = {
   addLocation: (location: TLocation) => void;
   updateLocation: (id: string, location: Partial<TLocation>) => void;
   deleteLocation: (id: string) => void;
-  addShipments: (shipment: TShipments) => void;
+  addShipment: (shipment: TShipments) => void;
+  updateShipment: (id: string, shipment: Partial<TShipments>) => void;
+  deleteShipment: (id: string) => void;
   addVehicle: (vehicle: TVehicles) => void;
   addSolution: (solution: TDirection) => void;
+  getWarehouses: () => string[];
+  getDropOffs: () => string[];
 };

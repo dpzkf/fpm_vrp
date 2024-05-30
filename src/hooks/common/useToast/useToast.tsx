@@ -20,10 +20,10 @@ export const useToast = () => {
   };
 
   const toastSuccess = (message?: string) => {
-    toast.success(message || "Success", { ...options, toastId: EToastIds.SuccessToast });
+    toast.success(message || "Зміни збережено", { ...options, toastId: EToastIds.SuccessToast });
   };
   const toastError = (message?: string) => {
-    toast.error(message || "Error", { ...options, toastId: EToastIds.ErrorToast, icon: TOAST_ERROR_ICO });
+    toast.error(message || "Помилка", { ...options, toastId: EToastIds.ErrorToast, icon: TOAST_ERROR_ICO });
   };
   const toastInfo = (message: string) => {
     toast.info(message, options);
@@ -39,7 +39,7 @@ export const useToast = () => {
         ...options,
         toastId: EToastIds.SuccessToast,
         render() {
-          return "Completed";
+          return "Завершено";
         },
         data: undefined,
       },
@@ -48,7 +48,7 @@ export const useToast = () => {
         toastId: EToastIds.ErrorToast,
         icon: TOAST_ERROR_ICO,
         render() {
-          return "Server Error";
+          return "Помилка";
         },
       },
     });

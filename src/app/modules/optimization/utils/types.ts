@@ -42,15 +42,16 @@ export type TVehicles = {
   latest_end?: string;
 };
 
-type TTimes = {
+export type TTimes = {
   earliest: string;
   latest: string;
 };
 
 export type TShipments = {
-  name: string;
-  from: string;
-  to: string;
+  id: string;
+  name?: string;
+  from?: string;
+  to?: string;
   size?: {
     boxes: number;
   };

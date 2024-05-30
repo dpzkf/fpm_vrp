@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
 
 import { TShipments, TVehicles } from "@app/modules";
 import { TDirection } from "@app/modules/directions";
@@ -15,6 +15,7 @@ import {
   TContextVehicles,
   TVehicleRoutingContext,
 } from "./types.ts";
+import { updateState } from "./utiils";
 
 export const VehicleRoutingContext = createContext<TVehicleRoutingContext | null>(null);
 
@@ -38,48 +39,88 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
   const [vehicles, setVehicles] = useState<TContextVehicles>([]);
   const [solution, setSolution] = useState<TContextSolution>(null);
 
-  const addLocation = (location: TLocation) => {
-    setLocations((prevState) => [...prevState, { ...location }]);
-  };
-  const updateLocation = (id: string, location: Partial<TLocation>) => {
-    const locationIndex = locations.findIndex((location) => location.id === id);
+  const changeActiveTab = useCallback((tab: ActiveTabs) => {
+    setActiveTab(tab);
+  }, []);
 
-    if (locationIndex !== -1) {
-      const updatedLocations = [...locations];
-      updatedLocations[locationIndex] = { ...updatedLocations[locationIndex], ...location };
-      setLocations(updatedLocations);
-    }
-  };
-  const deleteLocation = (id: string) => {
+  const addLocation = useCallback((location: TLocation) => {
+    setLocations((prevState) => [...prevState, location]);
+  }, []);
+
+  const updateLocation = useCallback((id: string, location: Partial<TLocation>) => {
+    setLocations((prevState) => updateState(prevState, id, location));
+  }, []);
+
+  const deleteLocation = useCallback((id: string) => {
     setLocations((prevState) => prevState.filter((el) => el.id !== id));
-  };
-  const addShipments = (shipment: TShipments) => {
+  }, []);
+
+  const addShipment = useCallback((shipment: TShipments) => {
     setShipments((prevState) => [...prevState, shipment]);
-  };
-  const addVehicle = (vehicle: TVehicles) => {
+  }, []);
+
+  const updateShipment = useCallback((id: string, shipment: Partial<TShipments>) => {
+    setShipments((prevState) => updateState(prevState, id, shipment));
+  }, []);
+
+  const deleteShipment = useCallback((id: string) => {
+    setShipments((prevState) => prevState.filter((el) => el.id !== id));
+  }, []);
+
+  const addVehicle = useCallback((vehicle: TVehicles) => {
     setVehicles((prevState) => [...prevState, vehicle]);
-  };
-  const addSolution = (solution: TDirection) => {
+  }, []);
+
+  const addSolution = useCallback((solution: TDirection) => {
     setSolution(solution);
-  };
-  return (
-    <VehicleRoutingContext.Provider
-      value={{
-        activeTab,
-        locations,
-        shipments,
-        vehicles,
-        solution,
-        changeActiveTab: setActiveTab,
-        addLocation,
-        updateLocation,
-        deleteLocation,
-        addShipments,
-        addVehicle,
-        addSolution,
-      }}
-    >
-      {children}
-    </VehicleRoutingContext.Provider>
+  }, []);
+
+  const getWarehouses = useCallback(() => {
+    return locations.filter(({ type }) => type === LocationType.WAREHOUSE).map(({ name }) => name);
+  }, [locations]);
+
+  const getDropOffs = useCallback(() => {
+    return locations.filter(({ type }) => type === LocationType.DROP_OFF).map(({ name }) => name);
+  }, [locations]);
+
+  const contextValue = useMemo(
+    () => ({
+      activeTab,
+      locations,
+      shipments,
+      vehicles,
+      solution,
+      changeActiveTab,
+      addLocation,
+      updateLocation,
+      deleteLocation,
+      addShipment,
+      updateShipment,
+      deleteShipment,
+      addVehicle,
+      addSolution,
+      getDropOffs,
+      getWarehouses,
+    }),
+    [
+      activeTab,
+      locations,
+      shipments,
+      vehicles,
+      solution,
+      changeActiveTab,
+      addLocation,
+      updateLocation,
+      deleteLocation,
+      addShipment,
+      updateShipment,
+      deleteShipment,
+      addVehicle,
+      addSolution,
+      getDropOffs,
+      getWarehouses,
+    ],
   );
+
+  return <VehicleRoutingContext.Provider value={contextValue}>{children}</VehicleRoutingContext.Provider>;
 };

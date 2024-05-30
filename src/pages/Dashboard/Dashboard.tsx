@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import InteractiveMap, {
   FullscreenControl,
   GeolocateControl,
@@ -34,9 +34,8 @@ import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
-
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
-  const { activeTab, addLocation, locations, updateLocation } = useContext(
+  const { activeTab, addLocation, locations, updateLocation, shipments } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
 
@@ -50,44 +49,47 @@ export const Dashboard = () => {
     { skip: !resolvedVrpData || isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData) },
   );
 
-  const handleGetResolvedVrp = async () => {
+  const handleGetResolvedVrp = useCallback(async () => {
     if (resolvedVrpData || !submitVrpData) return;
     await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
-  };
+  }, [resolvedVrpData, submitVrpData, triggerResolvedVrp]);
 
   useEffect(() => {
+    if (submitVrpIsLoading || resolvedVrpDataIsLoading || !submitVrpData) return;
+
     let timeoutId: NodeJS.Timeout;
-
-    if (submitVrpIsLoading || resolvedVrpDataIsLoading) return;
-
-    if (!submitVrpData) return;
-
     if (isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData)) {
       timeoutId = setTimeout(handleGetResolvedVrp, 3000);
     } else {
       handleGetResolvedVrp();
     }
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [submitVrpIsLoading, resolvedVrpDataIsLoading]);
+    return () => clearTimeout(timeoutId);
+  }, [submitVrpIsLoading, resolvedVrpDataIsLoading, submitVrpData, resolvedVrpData, handleGetResolvedVrp]);
 
-  const generateLineString = () => {
+  const generateLineString = useCallback(() => {
     if (directionsData) {
       return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry, 6))]);
     }
-    // const coordinates = markers.slice(1).reduce((acc: number[][][], marker) => {
-    //   acc.push([markers[0].coordinates, marker.coordinates]);
-    //   return acc;
-    // }, []);
-    //
-    // const geometry = {
-    //   type: "MultiLineString",
-    //   coordinates,
-    // };
-    // return feature(geometry);
-  };
+
+    if (!shipments) return;
+
+    const coordinates = shipments.reduce((acc: number[][][], shipment) => {
+      const fromCoord = locations.find((location) => location.name === shipment.from)?.coordinates;
+      const toCoord = locations.find((location) => location.name === shipment.to)?.coordinates;
+      if (fromCoord && toCoord) {
+        acc.push([fromCoord, toCoord]);
+      }
+      return acc;
+    }, []);
+
+    const geometry = {
+      type: "MultiLineString",
+      coordinates,
+    };
+
+    return feature(geometry);
+  }, [shipments, locations, directionsData, activeTab]);
 
   const handleClick = async (e: MapLayerMouseEvent) => {
     if (activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES) return;
@@ -98,38 +100,28 @@ export const Dashboard = () => {
       features: [response],
     } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
 
-    if (activeTab === ActiveTabs.LOCATIONS_WAREHOUSES) {
-      return addLocation({
-        coordinates: [lng, lat],
-        name: response?.properties?.name || locationId,
-        id: locationId,
-        type: LocationType.WAREHOUSE,
-      });
-    }
-    addLocation({
+    const newLocation: TLocation = {
       coordinates: [lng, lat],
       name: response?.properties?.name || locationId,
       id: locationId,
-      type: LocationType.DROP_OFF,
-    });
+      type: activeTab === ActiveTabs.LOCATIONS_WAREHOUSES ? LocationType.WAREHOUSE : LocationType.DROP_OFF,
+    };
+    addLocation(newLocation);
   };
 
-  const handleDrag = async (e: MarkerDragEvent, locationId: string) => {
-    const { lng, lat } = e.lngLat;
-    const updatedLocation: Partial<TLocation> = {
-      coordinates: [lng, lat],
-    };
-    updateLocation(locationId, updatedLocation);
+  const handleDrag = useCallback(
+    async (e: MarkerDragEvent, locationId: string) => {
+      const { lng, lat } = e.lngLat;
+      const updatedLocation: Partial<TLocation> = { coordinates: [lng, lat] };
+      updateLocation(locationId, updatedLocation);
 
-    const {
-      features: [response],
-    } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
-    const updatedLocationName: Partial<TLocation> = {
-      ...updatedLocation,
-      name: response?.properties?.name || locationId,
-    };
-    updateLocation(locationId, updatedLocationName);
-  };
+      const {
+        features: [response],
+      } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
+      updateLocation(locationId, { name: response?.properties?.name || locationId });
+    },
+    [updateLocation, triggerReverseGeocoding],
+  );
 
   const findSolution = async () => {
     await submitVrp(adaptSubmitData(locations)).unwrap();
@@ -157,15 +149,15 @@ export const Dashboard = () => {
           <ScaleControl />
           {locations.map(({ coordinates, id, type }) => (
             <Marker
+              key={id}
               longitude={coordinates[0]}
               latitude={coordinates[1]}
               draggable={activeTab === ActiveTabs.LOCATIONS_WAREHOUSES || activeTab === ActiveTabs.LOCATIONS_DROP_OFFS}
               onDragEnd={(e) => handleDrag(e, id)}
               color={type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
-              key={id}
             />
           ))}
-          {locations.length > 1 && (
+          {activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES && activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && (
             <Source id="polylineLayer" type="geojson" data={generateLineString()}>
               <Layer
                 id="lineLayer"

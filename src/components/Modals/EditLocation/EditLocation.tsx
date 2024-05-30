@@ -21,7 +21,7 @@ type TEditLocation = {
 
 export const EditLocation: FC<ContextModalProps<TEditLocation>> = ({ id, context, innerProps }) => {
   const { updateLocation, locations, locationId } = innerProps;
-  const location = locations.find(({ id }) => locationId === id);
+  const location = useMemo(() => locations.find(({ id }) => locationId === id), []);
   const defaultValues: Partial<TLocation> = useMemo(
     () => ({
       name: location?.name ?? "",
@@ -49,7 +49,7 @@ export const EditLocation: FC<ContextModalProps<TEditLocation>> = ({ id, context
 
   const handleUpdateLocation = () => {
     locationForm.handleSubmit(onFormSubmit)();
-    toastSuccess("Vendor added successfully");
+    toastSuccess();
     context.closeModal(id);
   };
 
@@ -60,10 +60,10 @@ export const EditLocation: FC<ContextModalProps<TEditLocation>> = ({ id, context
       </FormProvider>
       <Flex justify="flex-end" align="center" gap={16}>
         <Button variant="outline" onClick={() => context.closeModal(id)}>
-          Cancel
+          Відмінити
         </Button>
         <Button disabled={!isDisabled} onClick={handleUpdateLocation}>
-          Save Changes
+          Зберегті
         </Button>
       </Flex>
     </Modal>

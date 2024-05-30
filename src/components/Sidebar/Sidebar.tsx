@@ -8,7 +8,7 @@ import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 
 import { LocationType } from "../../types";
-import { Locations } from "./components/Locations";
+import { Locations, Shipments } from "./components";
 import * as Styled from "./styles.ts";
 import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
 
@@ -30,6 +30,7 @@ export const Sidebar = () => {
   );
   return (
     <Tabs
+      flex={2.2}
       miw={500}
       h="100dvh"
       value={activeTab}
@@ -61,6 +62,9 @@ export const Sidebar = () => {
         </Tabs.Panel>
         <Tabs.Panel value={ActiveTabs.LOCATIONS_DROP_OFFS}>
           <Locations locationType={LocationType.DROP_OFF} />
+        </Tabs.Panel>
+        <Tabs.Panel value={ActiveTabs.SHIPMENTS}>
+          <Shipments />
         </Tabs.Panel>
       </Stack>
       <Styled.ButtonWrapper>
