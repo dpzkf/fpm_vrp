@@ -1,21 +1,34 @@
-import { useContext, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 
 import { Button, Stack, Tabs } from "@mantine/core";
 
 import { Logo } from "@ui/index.ts";
 
+import { useHasDataChanged } from "@hooks/common";
+
+import { TRetrieveRoutingProblem } from "@app/modules";
+
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
+import { LocationType } from "types";
 
-import { LocationType } from "../../types";
 import { Locations, Shipments } from "./components";
+import { Solution } from "./components/Solution";
+import { Vehicles } from "./components/Vehicles";
 import * as Styled from "./styles.ts";
 import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
 
-export const Sidebar = () => {
-  const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs } = useContext(
+type TSidebar = {
+  solution?: TRetrieveRoutingProblem;
+  handleFindSolution: () => void;
+};
+
+export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution }) => {
+  const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs, locations } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
+
+  const hasDataChanged = useHasDataChanged(locations, vehicles, shipments);
 
   const warehouseLocationLength = getWarehouses().length;
   const dropOffLocationLength = getDropOffs().length;
@@ -26,8 +39,9 @@ export const Sidebar = () => {
       (activeTab === ActiveTabs.LOCATIONS_DROP_OFFS && !dropOffLocationLength) ||
       (activeTab === ActiveTabs.SHIPMENTS && !shipments.length) ||
       (activeTab === ActiveTabs.VEHICLES && !vehicles.length),
-    [activeTab, warehouseLocationLength, dropOffLocationLength],
+    [activeTab, warehouseLocationLength, dropOffLocationLength, shipments, vehicles],
   );
+
   return (
     <Tabs
       flex={2.2}
@@ -45,18 +59,18 @@ export const Sidebar = () => {
           <Tabs.Tab value={ActiveTabs.LOCATIONS_DROP_OFFS} disabled={!warehouseLocationLength}>
             2. Доставка
           </Tabs.Tab>
-          <Tabs.Tab value={ActiveTabs.SHIPMENTS} disabled={!dropOffLocationLength}>
+          <Tabs.Tab value={ActiveTabs.SHIPMENTS} disabled={!dropOffLocationLength || !warehouseLocationLength}>
             3. Відправлення
           </Tabs.Tab>
           <Tabs.Tab value={ActiveTabs.VEHICLES} disabled={!shipments.length}>
             4. Автомобілі
           </Tabs.Tab>
-          <Tabs.Tab value={ActiveTabs.SOLUTION} disabled={!shipments.length}>
+          <Tabs.Tab value={ActiveTabs.SOLUTION} disabled={!solution}>
             5. Рішення
           </Tabs.Tab>
         </Tabs.List>
       </Stack>
-      <Stack gap={24} flex={1} p={16} pt={0} style={{ overflow: "auto" }}>
+      <Stack gap={24} flex={1} p={16} pt={0} style={{ overflow: "scroll" }}>
         <Tabs.Panel value={ActiveTabs.LOCATIONS_WAREHOUSES}>
           <Locations locationType={LocationType.WAREHOUSE} />
         </Tabs.Panel>
@@ -65,6 +79,12 @@ export const Sidebar = () => {
         </Tabs.Panel>
         <Tabs.Panel value={ActiveTabs.SHIPMENTS}>
           <Shipments />
+        </Tabs.Panel>
+        <Tabs.Panel value={ActiveTabs.VEHICLES}>
+          <Vehicles />
+        </Tabs.Panel>
+        <Tabs.Panel value={ActiveTabs.SOLUTION}>
+          <Solution solution={solution} />
         </Tabs.Panel>
       </Stack>
       <Styled.ButtonWrapper>
@@ -83,8 +103,18 @@ export const Sidebar = () => {
           </Button>
         )}
         {activeTab === ActiveTabs.VEHICLES && (
-          <Button disabled={isNextButtonDisabled} variant="filled" bg="var(--primary-color)">
-            Далі
+          <Button
+            disabled={isNextButtonDisabled}
+            variant="filled"
+            color="teal"
+            onClick={() => {
+              if (!hasDataChanged) {
+                return changeActiveTab(handleNextStep(activeTab));
+              }
+              handleFindSolution();
+            }}
+          >
+            Знайти рішення
           </Button>
         )}
       </Styled.ButtonWrapper>

@@ -12,6 +12,9 @@ import InteractiveMap, {
   Source,
 } from "react-map-gl";
 
+import { LoadingOverlay } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+
 import { useToast } from "@hooks/common/useToast";
 
 import {
@@ -32,14 +35,23 @@ import uniqueId from "lodash.uniqueid";
 
 import { LocationType, TLocation } from "../../types";
 import * as Styled from "./styles.ts";
-import { adaptDirectionsData, TViewState } from "./utils";
+import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
-  const { activeTab, addLocation, locations, updateLocation, shipments, getDropOffs, getWarehouses } = useContext(
-    VehicleRoutingContext,
-  ) as TVehicleRoutingContext;
+  const [isLoadingOverlayVisible, loadingOverlay] = useDisclosure(false);
+  const {
+    activeTab,
+    addLocation,
+    locations,
+    updateLocation,
+    shipments,
+    getDropOffs,
+    getWarehouses,
+    vehicles,
+    changeActiveTab,
+  } = useContext(VehicleRoutingContext) as TVehicleRoutingContext;
 
   const [submitVrp, { data: submitVrpData, isLoading: submitVrpIsLoading }] = useSubmitVehicleRoutingProblemMutation();
   const [triggerResolvedVrp, { data: resolvedVrpData, isFetching: resolvedVrpDataIsLoading }] =
@@ -55,7 +67,17 @@ export const Dashboard = () => {
 
   const handleGetResolvedVrp = useCallback(async () => {
     if (resolvedVrpData || !submitVrpData) return;
-    await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
+    try {
+      await triggerResolvedVrp({ id: submitVrpData.id })
+        .unwrap()
+        .then((res) => {
+          if (isRetrieveRoutingProblemResponseWithStatus(res)) return;
+          changeActiveTab(ActiveTabs.SOLUTION);
+          loadingOverlay.toggle();
+        });
+    } catch (error) {
+      toastError();
+    }
   }, [resolvedVrpData, submitVrpData, triggerResolvedVrp]);
 
   useEffect(() => {
@@ -72,7 +94,7 @@ export const Dashboard = () => {
   }, [submitVrpIsLoading, resolvedVrpDataIsLoading, submitVrpData, resolvedVrpData, handleGetResolvedVrp]);
 
   const generateLineString = useCallback(() => {
-    if (directionsData) {
+    if (directionsData && activeTab === ActiveTabs.SOLUTION) {
       return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry, 6))]);
     }
 
@@ -131,13 +153,15 @@ export const Dashboard = () => {
     updateLocation(locationId, { name: response?.properties?.name || locationId });
   };
 
-  // const findSolution = async () => {
-  //   await submitVrp(adaptSubmitData(locations)).unwrap();
-  // };
+  const handleFindSolution = async () => {
+    loadingOverlay.toggle();
+    await submitVrp(adaptSubmitData(locations, shipments, vehicles)).unwrap();
+  };
 
   return (
     <Styled.Wrapper>
-      <Sidebar />
+      <LoadingOverlay visible={isLoadingOverlayVisible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+      <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} />
       <Styled.MapWrapper>
         <InteractiveMap
           reuseMaps

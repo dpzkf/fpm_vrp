@@ -32,6 +32,7 @@ export type TLocations = {
 };
 
 export type TVehicles = {
+  id: string;
   name: string;
   start_location?: string;
   end_location?: string;
@@ -49,9 +50,9 @@ export type TTimes = {
 
 export type TShipments = {
   id: string;
-  name?: string;
-  from?: string;
-  to?: string;
+  name: string;
+  from: string;
+  to: string;
   size?: {
     boxes: number;
   };
@@ -78,8 +79,8 @@ export type TSubmitRoutingProblemResponse = TSubmitRoutingProblem;
 export type TSubmitRoutingProblemBody = {
   version: 1;
   locations: TLocations[];
-  vehicles: TVehicles[];
-  shipments: TShipments[];
+  vehicles: Omit<TVehicles, "id">[];
+  shipments: Omit<TShipments, "id">[];
 };
 
 export type TSubmitRouting = TSubmitRoutingProblemBody;

@@ -5,6 +5,7 @@ export const Wrapper = styled.main`
   width: 100%;
   overflow: hidden;
   display: flex;
+  position: relative;
 `;
 
 export const MapWrapper = styled.section`

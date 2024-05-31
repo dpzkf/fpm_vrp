@@ -2,19 +2,12 @@ import * as React from "react";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
 
 import { TShipments, TVehicles } from "@app/modules";
-import { TDirection } from "@app/modules/directions";
 
 import { ActiveTabs } from "@components/Sidebar";
 import uniqueId from "lodash.uniqueid";
 
 import { LocationType, TLocation } from "../types";
-import {
-  TContextLocations,
-  TContextShipments,
-  TContextSolution,
-  TContextVehicles,
-  TVehicleRoutingContext,
-} from "./types.ts";
+import { TContextLocations, TContextShipments, TContextVehicles, TVehicleRoutingContext } from "./types.ts";
 import { updateState } from "./utiils";
 
 export const VehicleRoutingContext = createContext<TVehicleRoutingContext | null>(null);
@@ -37,7 +30,6 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
   ]);
   const [shipments, setShipments] = useState<TContextShipments>([]);
   const [vehicles, setVehicles] = useState<TContextVehicles>([]);
-  const [solution, setSolution] = useState<TContextSolution>(null);
 
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);
@@ -71,8 +63,12 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
     setVehicles((prevState) => [...prevState, vehicle]);
   }, []);
 
-  const addSolution = useCallback((solution: TDirection) => {
-    setSolution(solution);
+  const updateVehicle = useCallback((id: string, vehicle: Partial<TVehicles>) => {
+    setVehicles((prevState) => updateState(prevState, id, vehicle));
+  }, []);
+
+  const deleteVehicle = useCallback((id: string) => {
+    setVehicles((prevState) => prevState.filter((el) => el.id !== id));
   }, []);
 
   const getWarehouses = useCallback(() => {
@@ -89,7 +85,6 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       locations,
       shipments,
       vehicles,
-      solution,
       changeActiveTab,
       addLocation,
       updateLocation,
@@ -98,7 +93,8 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       updateShipment,
       deleteShipment,
       addVehicle,
-      addSolution,
+      updateVehicle,
+      deleteVehicle,
       getDropOffs,
       getWarehouses,
     }),
@@ -107,7 +103,6 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       locations,
       shipments,
       vehicles,
-      solution,
       changeActiveTab,
       addLocation,
       updateLocation,
@@ -116,7 +111,8 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       updateShipment,
       deleteShipment,
       addVehicle,
-      addSolution,
+      updateVehicle,
+      deleteVehicle,
       getDropOffs,
       getWarehouses,
     ],
