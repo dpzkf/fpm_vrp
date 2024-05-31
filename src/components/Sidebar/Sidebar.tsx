@@ -4,12 +4,11 @@ import { Button, Stack, Tabs } from "@mantine/core";
 
 import { Logo } from "@ui/index.ts";
 
-import { useHasDataChanged } from "@hooks/common";
-
 import { TRetrieveRoutingProblem } from "@app/modules";
 
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
+import isEqual from "lodash.isequal";
 import { LocationType } from "types";
 
 import { Locations, Shipments } from "./components";
@@ -20,15 +19,14 @@ import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
 
 type TSidebar = {
   solution?: TRetrieveRoutingProblem;
+  submittedData: Record<string, unknown> | null;
   handleFindSolution: () => void;
 };
 
-export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution }) => {
+export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedData }) => {
   const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs, locations } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
-
-  const hasDataChanged = useHasDataChanged(locations, vehicles, shipments);
 
   const warehouseLocationLength = getWarehouses().length;
   const dropOffLocationLength = getDropOffs().length;
@@ -39,9 +37,13 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution }) => {
       (activeTab === ActiveTabs.LOCATIONS_DROP_OFFS && !dropOffLocationLength) ||
       (activeTab === ActiveTabs.SHIPMENTS && !shipments.length) ||
       (activeTab === ActiveTabs.VEHICLES && !vehicles.length),
-    [activeTab, warehouseLocationLength, dropOffLocationLength, shipments, vehicles],
+    [activeTab, locations, shipments, vehicles],
   );
 
+  const hasDataChanged = useMemo(
+    () => isEqual(submittedData, { shipments, vehicles, locations }),
+    [locations, shipments, vehicles, submittedData],
+  );
   return (
     <Tabs
       flex={2.2}
@@ -109,9 +111,10 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution }) => {
             color="teal"
             onClick={() => {
               if (!hasDataChanged) {
-                return changeActiveTab(handleNextStep(activeTab));
+                handleFindSolution();
+                return;
               }
-              handleFindSolution();
+              changeActiveTab(handleNextStep(activeTab));
             }}
           >
             Знайти рішення

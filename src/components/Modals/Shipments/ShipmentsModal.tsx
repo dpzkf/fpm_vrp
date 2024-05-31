@@ -11,6 +11,7 @@ import { TShipments } from "@app/modules";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatISOStringToTime } from "@utils/helpers";
 import uniqueId from "lodash.uniqueid";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { Modal } from "../styles.ts";
@@ -59,7 +60,11 @@ export const ShipmentsModal: FC<ContextModalProps<TShipmentsModal>> = ({ id, con
 
   const onFormSubmit = (values: z.infer<typeof shipmentsFormSchema>) => {
     if (!shipmentId) {
-      return create?.({ id: uniqueId("shipment_"), name: String(shipments.length), ...formatData(values) });
+      return create?.({
+        ...(formatData(values) as TShipments),
+        id: uuidv4(),
+        name: uniqueId(),
+      });
     }
     update?.(shipmentId, formatData(values));
   };

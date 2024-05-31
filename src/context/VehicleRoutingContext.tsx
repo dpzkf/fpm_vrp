@@ -4,7 +4,7 @@ import { createContext, PropsWithChildren, useCallback, useMemo, useState } from
 import { TShipments, TVehicles } from "@app/modules";
 
 import { ActiveTabs } from "@components/Sidebar";
-import uniqueId from "lodash.uniqueid";
+import { v4 as uuidv4 } from "uuid";
 
 import { LocationType, TLocation } from "../types";
 import { TContextLocations, TContextShipments, TContextVehicles, TVehicleRoutingContext } from "./types.ts";
@@ -18,18 +18,18 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
     {
       name: "Перша Дачна Вулиця 80",
       coordinates: [35.0369429788974, 48.428788936916646],
-      id: uniqueId("location-warehouse_"),
+      id: uuidv4(),
       type: LocationType.WAREHOUSE,
     },
     {
       name: "Сєрова Вулиця 2",
       coordinates: [35.03710623364512, 48.46818956311154],
       type: LocationType.DROP_OFF,
-      id: uniqueId("location-drop-off_"),
+      id: uuidv4(),
     },
   ]);
   const [shipments, setShipments] = useState<TContextShipments>([]);
-  const [vehicles, setVehicles] = useState<TContextVehicles>([]);
+  const [vehicles, setVehicles] = useState<TContextVehicles>([{ id: uuidv4(), name: "0", capacities: { boxes: 10 } }]);
 
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);

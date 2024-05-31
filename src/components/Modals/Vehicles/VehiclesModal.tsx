@@ -10,6 +10,7 @@ import { TVehicles } from "@app/modules";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import uniqueId from "lodash.uniqueid";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { Modal } from "../styles.ts";
@@ -49,7 +50,11 @@ export const VehiclesModal: FC<ContextModalProps<TVehiclesModal>> = ({ id, conte
 
   const onFormSubmit = (values: z.infer<typeof vehiclesFormSchema>) => {
     if (!vehicleId) {
-      return create?.({ id: uniqueId("vehicle_"), name: String(vehicles.length), ...formatData(values) });
+      return create?.({
+        ...formatData(values),
+        id: uuidv4(),
+        name: uniqueId(),
+      });
     }
     update?.(vehicleId, formatData(values));
   };

@@ -32,6 +32,7 @@ import polyline from "@mapbox/polyline";
 import { feature, featureCollection } from "@turf/helpers";
 import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
+import { v4 as uuidv4 } from "uuid";
 
 import { LocationType, TLocation } from "../../types";
 import * as Styled from "./styles.ts";
@@ -40,7 +41,9 @@ import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
-  const [isLoadingOverlayVisible, loadingOverlay] = useDisclosure(false);
+  const [shouldRetry, setShouldRetry] = useState<boolean>(false);
+  const [submittedData, setSubmittedData] = useState<Record<string, unknown> | null>(null);
+  const [isLoadingOverlayVisible, { toggle: toggleLoadingOverlay }] = useDisclosure(false);
   const {
     activeTab,
     addLocation,
@@ -53,45 +56,33 @@ export const Dashboard = () => {
     changeActiveTab,
   } = useContext(VehicleRoutingContext) as TVehicleRoutingContext;
 
-  const [submitVrp, { data: submitVrpData, isLoading: submitVrpIsLoading }] = useSubmitVehicleRoutingProblemMutation();
-  const [triggerResolvedVrp, { data: resolvedVrpData, isFetching: resolvedVrpDataIsLoading }] =
-    useLazyGetResolvedVehicleRoutingProblemQuery();
+  const [submitVrp, { data: submitVrpData }] = useSubmitVehicleRoutingProblemMutation();
+  const [triggerResolvedVrp, { data: resolvedVrpData }] = useLazyGetResolvedVehicleRoutingProblemQuery();
   const [triggerReverseGeocoding] = useLazyGetReverseGeocodingQuery();
 
   const { data: directionsData } = useGetDirectionsQuery(
-    { waypoints: adaptDirectionsData(resolvedVrpData?.routes[0]) },
+    { waypoints: adaptDirectionsData(resolvedVrpData?.routes?.[0]) },
     { skip: !resolvedVrpData || isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData) },
   );
 
   const { toastError } = useToast();
 
-  const handleGetResolvedVrp = useCallback(async () => {
-    if (resolvedVrpData || !submitVrpData) return;
-    try {
-      await triggerResolvedVrp({ id: submitVrpData.id })
-        .unwrap()
-        .then((res) => {
-          if (isRetrieveRoutingProblemResponseWithStatus(res)) return;
-          changeActiveTab(ActiveTabs.SOLUTION);
-          loadingOverlay.toggle();
-        });
-    } catch (error) {
-      toastError();
+  const handleGetResolvedVrp = async () => {
+    if (!submitVrpData) return;
+    const res = await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
+    if (isRetrieveRoutingProblemResponseWithStatus(res)) {
+      return setShouldRetry((prevState) => !prevState);
     }
-  }, [resolvedVrpData, submitVrpData, triggerResolvedVrp]);
+    changeActiveTab(ActiveTabs.SOLUTION);
+    toggleLoadingOverlay();
+    setSubmittedData({ locations, vehicles, shipments });
+  };
 
   useEffect(() => {
-    if (submitVrpIsLoading || resolvedVrpDataIsLoading || !submitVrpData) return;
-
-    let timeoutId: NodeJS.Timeout;
-    if (isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData)) {
-      timeoutId = setTimeout(handleGetResolvedVrp, 3000);
-    } else {
-      handleGetResolvedVrp();
-    }
-
+    if (!submitVrpData) return;
+    const timeoutId = setTimeout(handleGetResolvedVrp, 3000);
     return () => clearTimeout(timeoutId);
-  }, [submitVrpIsLoading, resolvedVrpDataIsLoading, submitVrpData, resolvedVrpData, handleGetResolvedVrp]);
+  }, [submitVrpData?.id, shouldRetry]);
 
   const generateLineString = useCallback(() => {
     if (directionsData && activeTab === ActiveTabs.SOLUTION) {
@@ -101,10 +92,10 @@ export const Dashboard = () => {
     if (!shipments) return;
 
     const coordinates = shipments.reduce((acc: number[][][], shipment) => {
-      const fromCoord = locations.find((location) => location.name === shipment.from)?.coordinates;
-      const toCoord = locations.find((location) => location.name === shipment.to)?.coordinates;
-      if (fromCoord && toCoord) {
-        acc.push([fromCoord, toCoord]);
+      const fromCoordinates = locations.find((location) => location.name === shipment.from)?.coordinates;
+      const toCoordinates = locations.find((location) => location.name === shipment.to)?.coordinates;
+      if (fromCoordinates && toCoordinates) {
+        acc.push([fromCoordinates, toCoordinates]);
       }
       return acc;
     }, []);
@@ -128,15 +119,15 @@ export const Dashboard = () => {
     }
 
     const { lng, lat } = e.lngLat;
-    const locationId = uniqueId("location_");
+    const locationName = uniqueId("location-");
     const {
       features: [response],
     } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
 
     const newLocation: TLocation = {
       coordinates: [lng, lat],
-      name: response?.properties?.name || locationId,
-      id: locationId,
+      name: response?.properties?.name || locationName,
+      id: uuidv4(),
       type: activeTab === ActiveTabs.LOCATIONS_WAREHOUSES ? LocationType.WAREHOUSE : LocationType.DROP_OFF,
     };
     addLocation(newLocation);
@@ -147,21 +138,22 @@ export const Dashboard = () => {
     const updatedLocation: Partial<TLocation> = { coordinates: [lng, lat] };
     updateLocation(locationId, updatedLocation);
 
+    const locationName = uniqueId("location-");
     const {
       features: [response],
     } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
-    updateLocation(locationId, { name: response?.properties?.name || locationId });
+    updateLocation(locationId, { name: response?.properties?.name || locationName });
   };
 
   const handleFindSolution = async () => {
-    loadingOverlay.toggle();
+    toggleLoadingOverlay();
     await submitVrp(adaptSubmitData(locations, shipments, vehicles)).unwrap();
   };
 
   return (
     <Styled.Wrapper>
       <LoadingOverlay visible={isLoadingOverlayVisible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-      <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} />
+      <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} submittedData={submittedData} />
       <Styled.MapWrapper>
         <InteractiveMap
           reuseMaps
