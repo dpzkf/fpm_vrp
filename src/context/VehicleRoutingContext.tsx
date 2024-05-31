@@ -39,8 +39,6 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
   const [vehicles, setVehicles] = useState<TContextVehicles>([]);
   const [solution, setSolution] = useState<TContextSolution>(null);
 
-  console.log(shipments);
-
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);
   }, []);
@@ -78,11 +76,11 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
   }, []);
 
   const getWarehouses = useCallback(() => {
-    return locations.filter(({ type }) => type === LocationType.WAREHOUSE).map(({ name }) => name);
+    return [...new Set(locations.filter(({ type }) => type === LocationType.WAREHOUSE).map(({ name }) => name))];
   }, [locations]);
 
   const getDropOffs = useCallback(() => {
-    return locations.filter(({ type }) => type === LocationType.DROP_OFF).map(({ name }) => name);
+    return [...new Set(locations.filter(({ type }) => type === LocationType.DROP_OFF).map(({ name }) => name))];
   }, [locations]);
 
   const contextValue = useMemo(

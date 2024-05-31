@@ -11,7 +11,7 @@ export const MODAL_CONFIG: Record<string, FC<ContextModalProps<any>>> = {
 };
 
 export const MODAL_PROPS = {
-  size: "clamp(300px, 70%, 450px)",
+  size: "clamp(300px, 70%, 480px)",
   title: "Редагування",
   centered: true,
   withinPortal: false,

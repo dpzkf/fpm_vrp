@@ -12,6 +12,8 @@ import InteractiveMap, {
   Source,
 } from "react-map-gl";
 
+import { useToast } from "@hooks/common/useToast";
+
 import {
   useLazyGetResolvedVehicleRoutingProblemQuery,
   useLazyGetReverseGeocodingQuery,
@@ -25,7 +27,7 @@ import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 import polyline from "@mapbox/polyline";
 import { feature, featureCollection } from "@turf/helpers";
-import { VIEW_STATE } from "@utils/constants";
+import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
 
 import { LocationType, TLocation } from "../../types";
@@ -35,7 +37,7 @@ import { adaptDirectionsData, TViewState } from "./utils";
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
-  const { activeTab, addLocation, locations, updateLocation, shipments } = useContext(
+  const { activeTab, addLocation, locations, updateLocation, shipments, getDropOffs, getWarehouses } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
 
@@ -48,6 +50,8 @@ export const Dashboard = () => {
     { waypoints: adaptDirectionsData(resolvedVrpData?.routes[0]) },
     { skip: !resolvedVrpData || isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData) },
   );
+
+  const { toastError } = useToast();
 
   const handleGetResolvedVrp = useCallback(async () => {
     if (resolvedVrpData || !submitVrpData) return;
@@ -91,8 +95,15 @@ export const Dashboard = () => {
     return feature(geometry);
   }, [shipments, locations, directionsData, activeTab]);
 
-  const handleClick = async (e: MapLayerMouseEvent) => {
+  const handleSetMarker = async (e: MapLayerMouseEvent) => {
     if (activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES) return;
+
+    if (
+      (getWarehouses().length >= MAX_PICKUP && activeTab === ActiveTabs.LOCATIONS_WAREHOUSES) ||
+      (getDropOffs().length >= MAX_DROP_OFFS && activeTab === ActiveTabs.LOCATIONS_DROP_OFFS)
+    ) {
+      return toastError("Досягнут ліміт");
+    }
 
     const { lng, lat } = e.lngLat;
     const locationId = uniqueId("location_");
@@ -109,19 +120,16 @@ export const Dashboard = () => {
     addLocation(newLocation);
   };
 
-  const handleDrag = useCallback(
-    async (e: MarkerDragEvent, locationId: string) => {
-      const { lng, lat } = e.lngLat;
-      const updatedLocation: Partial<TLocation> = { coordinates: [lng, lat] };
-      updateLocation(locationId, updatedLocation);
+  const handleDrag = async (e: MarkerDragEvent, locationId: string) => {
+    const { lng, lat } = e.lngLat;
+    const updatedLocation: Partial<TLocation> = { coordinates: [lng, lat] };
+    updateLocation(locationId, updatedLocation);
 
-      const {
-        features: [response],
-      } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
-      updateLocation(locationId, { name: response?.properties?.name || locationId });
-    },
-    [updateLocation, triggerReverseGeocoding],
-  );
+    const {
+      features: [response],
+    } = await triggerReverseGeocoding({ longitude: lng, latitude: lat }).unwrap();
+    updateLocation(locationId, { name: response?.properties?.name || locationId });
+  };
 
   // const findSolution = async () => {
   //   await submitVrp(adaptSubmitData(locations)).unwrap();
@@ -140,7 +148,7 @@ export const Dashboard = () => {
           projection={{ name: "globe" }}
           mapboxAccessToken={import.meta.env.VITE_BASE_MAPBOX_TOKEN || ""}
           onMove={(evt) => setViewState(evt.viewState)}
-          onClick={handleClick}
+          onClick={handleSetMarker}
           {...viewState}
         >
           <GeolocateControl position="top-right" />

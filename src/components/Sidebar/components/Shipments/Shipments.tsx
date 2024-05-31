@@ -5,6 +5,8 @@ import { openContextModal } from "@mantine/modals";
 
 import { Text } from "@ui/typography";
 
+import { useToast } from "@hooks/common/useToast";
+
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 
@@ -14,6 +16,8 @@ export const Shipments = () => {
   const { getWarehouses, getDropOffs, addShipment, shipments } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
+
+  const { toastError } = useToast();
   return (
     <Stack gap={16}>
       <Group justify="space-between">
@@ -21,6 +25,9 @@ export const Shipments = () => {
         <Button
           variant="white"
           onClick={() => {
+            if (shipments.length >= getDropOffs().length) {
+              return toastError("Відправки не може бути більше, ніж точок доставок");
+            }
             openContextModal({
               modal: "shipmentsModal",
               innerProps: {

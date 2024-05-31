@@ -13,12 +13,12 @@ import * as Styled from "./styles.ts";
 import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
 
 export const Sidebar = () => {
-  const { activeTab, changeActiveTab, shipments, vehicles, locations } = useContext(
+  const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
 
-  const warehouseLocationLength = locations.filter(({ type }) => type === LocationType.WAREHOUSE).length;
-  const dropOffLocationLength = locations.filter(({ type }) => type === LocationType.DROP_OFF).length;
+  const warehouseLocationLength = getWarehouses().length;
+  const dropOffLocationLength = getDropOffs().length;
 
   const isNextButtonDisabled = useMemo(
     () =>
@@ -26,7 +26,7 @@ export const Sidebar = () => {
       (activeTab === ActiveTabs.LOCATIONS_DROP_OFFS && !dropOffLocationLength) ||
       (activeTab === ActiveTabs.SHIPMENTS && !shipments.length) ||
       (activeTab === ActiveTabs.VEHICLES && !vehicles.length),
-    [activeTab],
+    [activeTab, warehouseLocationLength, dropOffLocationLength],
   );
   return (
     <Tabs
