@@ -17,9 +17,13 @@
     --gray-text-color: #889098;
     --text-secondary: #67757c;
 
-    --warehouse-color: #fc8102;
-    --green: #15AC5A;
-    --red: #F54848;
+    --first-vehicle: #94F188;
+    --second-vehicle: #00E2B5;
+    --third-vehicle: #F9F871;
+
+    --warehouse-color: #DB6527;
+    --green: #00A04E;
+    --red: #E55A4C;
 
     /* bg colors */
     --white: #FCFBFC;

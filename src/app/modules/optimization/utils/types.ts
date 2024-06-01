@@ -66,6 +66,7 @@ export enum ESubmitRoutingProblemStatus {
   PENDING = "pending",
   PROCESSING = "processing",
   COMPLETE = "ok",
+  UNSOLVABLE = "unsolvable",
 }
 
 export type TSubmitRoutingProblem = {

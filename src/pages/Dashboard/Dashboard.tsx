@@ -2,14 +2,12 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import InteractiveMap, {
   FullscreenControl,
   GeolocateControl,
-  Layer,
   MapLayerMouseEvent,
   MapRef,
   Marker,
   MarkerDragEvent,
   NavigationControl,
   ScaleControl,
-  Source,
 } from "react-map-gl";
 
 import { LoadingOverlay } from "@mantine/core";
@@ -18,6 +16,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useToast } from "@hooks/common/useToast";
 
 import {
+  isRetrieveRoutingProblemUnsolvable,
   useLazyGetResolvedVehicleRoutingProblemQuery,
   useLazyGetReverseGeocodingQuery,
   useSubmitVehicleRoutingProblemMutation,
@@ -34,7 +33,8 @@ import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
 import { v4 as uuidv4 } from "uuid";
 
-import { LocationType, TLocation } from "../../types";
+import { LocationType, TLocation } from "types";
+import { MapLayers } from "./components";
 import * as Styled from "./styles.ts";
 import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
 
@@ -70,6 +70,9 @@ export const Dashboard = () => {
   const handleGetResolvedVrp = async () => {
     if (!submitVrpData) return;
     const res = await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
+    if (isRetrieveRoutingProblemUnsolvable(res)) {
+      return toastError("Неможливо вирішити цю задачу");
+    }
     if (isRetrieveRoutingProblemResponseWithStatus(res)) {
       return setShouldRetry((prevState) => !prevState);
     }
@@ -182,36 +185,7 @@ export const Dashboard = () => {
             />
           ))}
           {activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES && activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && (
-            <Source id="polylineLayer" type="geojson" data={generateLineString()}>
-              <Layer
-                id="lineLayer"
-                type="line"
-                layout={{
-                  "line-join": "round",
-                  "line-cap": "round",
-                }}
-                paint={{
-                  "line-color": "rgba(3, 170, 238, 0.5)",
-                  "line-width": 5,
-                }}
-              />
-              <Layer
-                id="routearrows"
-                type="symbol"
-                layout={{
-                  "symbol-placement": "line",
-                  "text-field": "▶",
-                  "text-size": ["interpolate", ["linear"], ["zoom"], 12, 24, 22, 28],
-                  "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 12, 30, 22, 160],
-                  "text-keep-upright": false,
-                }}
-                paint={{
-                  "text-color": "#3887be",
-                  "text-halo-color": "hsl(55, 11%, 96%)",
-                  "text-halo-width": 3,
-                }}
-              />
-            </Source>
+            <MapLayers data={generateLineString()} />
           )}
         </InteractiveMap>
       </Styled.MapWrapper>
