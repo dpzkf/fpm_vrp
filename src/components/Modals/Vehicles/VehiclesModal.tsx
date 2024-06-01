@@ -16,6 +16,7 @@ import { z } from "zod";
 import { Modal } from "../styles.ts";
 import { VehiclesForm, vehiclesFormSchema } from "./Form";
 import { formatData } from "./utils";
+import { formatISOStringToTime } from "@utils/helpers";
 
 type TVehiclesModal = {
   vehicleId?: string;
@@ -30,6 +31,8 @@ export const VehiclesModal: FC<ContextModalProps<TVehiclesModal>> = ({ id, conte
   const defaultValues = useMemo(
     () => ({
       capacity: vehicle?.capacities?.boxes || 0,
+      earliest_start: vehicle?.earliest_start ? formatISOStringToTime(vehicle.earliest_start) : "",
+      latest_end: vehicle?.latest_end ? formatISOStringToTime(vehicle.latest_end) : "",
     }),
     [vehicle],
   );

@@ -12,7 +12,7 @@ export const MapWrapper = styled.section`
   flex: 4 1;
   position: relative;
 
-  .mapboxgl-popup {
-    max-width: 400px;
+  .mapboxgl-popup-content {
+    padding: 10px 20px;
   }
 `;

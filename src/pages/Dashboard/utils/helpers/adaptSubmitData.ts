@@ -18,9 +18,11 @@ export const adaptSubmitData = (
     size,
     dropoff_times,
   }));
-  const vehicles = vehiclesData.map(({ name, capacities }) => ({
+  const vehicles = vehiclesData.map(({ name, capacities, earliest_start, latest_end }) => ({
     name,
     capacities,
+    earliest_start,
+    latest_end,
   }));
   return { version: 1, locations, shipments, vehicles };
 };

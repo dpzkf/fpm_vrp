@@ -59,7 +59,7 @@ export const ShipmentsForm: FC<TShipmentsForm> = ({ warehouseLocations, dropOffL
             label="Кількість товарів"
             error={error?.message}
             min={1}
-            max={10}
+            max={100}
             allowNegative={false}
             {...field}
             placeholder="Обрати кількість товарів(можно залишити невизначенним)"

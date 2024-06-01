@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import InteractiveMap, {
   FullscreenControl,
   GeolocateControl,
@@ -7,6 +7,7 @@ import InteractiveMap, {
   Marker,
   MarkerDragEvent,
   NavigationControl,
+  Popup,
   ScaleControl,
 } from "react-map-gl";
 
@@ -16,13 +17,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { useToast } from "@hooks/common/useToast";
 
 import {
+  isRetrieveRoutingProblemResponseWithStatus,
   isRetrieveRoutingProblemUnsolvable,
   useLazyGetResolvedVehicleRoutingProblemQuery,
   useLazyGetReverseGeocodingQuery,
   useSubmitVehicleRoutingProblemMutation,
 } from "@app/modules";
 import { useGetDirectionsQuery } from "@app/modules/directions";
-import { isRetrieveRoutingProblemResponseWithStatus } from "@app/modules/optimization/utils";
 
 import { ActiveTabs, Sidebar } from "@components/Sidebar";
 import { TVehicleRoutingContext } from "@context/types.ts";
@@ -31,19 +32,23 @@ import polyline from "@mapbox/polyline";
 import { feature, featureCollection } from "@turf/helpers";
 import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
+import { LocationType, TLocation } from "types";
 import { v4 as uuidv4 } from "uuid";
 
-import { LocationType, TLocation } from "types";
 import { MapLayers } from "./components";
 import * as Styled from "./styles.ts";
 import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
+import { Text } from "@ui/typography";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
+
+  const [popupInfo, setPopupInfo] = useState<TLocation | null>(null);
   const [shouldRetry, setShouldRetry] = useState<boolean>(false);
   const [submittedData, setSubmittedData] = useState<Record<string, unknown> | null>(null);
   const [isLoadingOverlayVisible, { toggle: toggleLoadingOverlay }] = useDisclosure(false);
+
   const {
     activeTab,
     addLocation,
@@ -59,6 +64,28 @@ export const Dashboard = () => {
   const [submitVrp, { data: submitVrpData }] = useSubmitVehicleRoutingProblemMutation();
   const [triggerResolvedVrp, { data: resolvedVrpData }] = useLazyGetResolvedVehicleRoutingProblemQuery();
   const [triggerReverseGeocoding] = useLazyGetReverseGeocodingQuery();
+
+  const markers = useMemo(
+    () =>
+      locations.map((location) => (
+        <Marker
+          key={location.id}
+          longitude={location.coordinates[0]}
+          latitude={location.coordinates[1]}
+          draggable={activeTab === ActiveTabs.LOCATIONS_WAREHOUSES || activeTab === ActiveTabs.LOCATIONS_DROP_OFFS}
+          onDragEnd={(e) => handleDrag(e, location.id)}
+          onClick={(e) => {
+            if (activeTab === ActiveTabs.LOCATIONS_DROP_OFFS || activeTab === ActiveTabs.LOCATIONS_WAREHOUSES) return;
+            // If we let the click event propagates to the map, it will immediately close the popup
+            // with `closeOnClick: true`
+            e.originalEvent.stopPropagation();
+            setPopupInfo(location);
+          }}
+          color={location.type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
+        />
+      )),
+    [locations],
+  );
 
   const { data: directionsData } = useGetDirectionsQuery(
     { waypoints: adaptDirectionsData(resolvedVrpData?.routes?.[0]) },
@@ -174,16 +201,17 @@ export const Dashboard = () => {
           <FullscreenControl position="top-right" />
           <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
-          {locations.map(({ coordinates, id, type }) => (
-            <Marker
-              key={id}
-              longitude={coordinates[0]}
-              latitude={coordinates[1]}
-              draggable={activeTab === ActiveTabs.LOCATIONS_WAREHOUSES || activeTab === ActiveTabs.LOCATIONS_DROP_OFFS}
-              onDragEnd={(e) => handleDrag(e, id)}
-              color={type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
-            />
-          ))}
+          {markers}
+          {popupInfo && (
+            <Popup
+              longitude={popupInfo.coordinates[0]}
+              latitude={popupInfo.coordinates[1]}
+              offset={10}
+              onClose={() => setPopupInfo(null)}
+            >
+              <Text fw={500}>{popupInfo.name}</Text>
+            </Popup>
+          )}
           {activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES && activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && (
             <MapLayers data={generateLineString()} />
           )}

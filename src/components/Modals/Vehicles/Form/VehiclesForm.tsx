@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 
 import { NumberInput } from "@mantine/core";
+import { TimeInput } from "@mantine/dates";
 
 export const VehiclesForm = () => {
   const form = useFormContext();
@@ -11,17 +12,39 @@ export const VehiclesForm = () => {
         control={form.control}
         render={({ field, fieldState: { error } }) => (
           <NumberInput
-            {...field}
-            required
             label="Місткість"
             error={error?.message}
             min={1}
-            max={10}
+            max={100}
             allowNegative={false}
-            clampBehavior="strict"
-            value={field.value}
-            onChange={(value) => field.onChange(value as number)}
-            placeholder="Введіть Місткість"
+            {...field}
+            placeholder="Обрати кількість товарів(можно залишити невизначенним)"
+          />
+        )}
+      />
+      <Controller
+        name="earliest_start"
+        control={form.control}
+        render={({ field, fieldState: { error } }) => (
+          <TimeInput
+            label="Початок роботи"
+            maxTime={form.watch("latest_end")}
+            error={error?.message}
+            {...field}
+            onChange={(e) => field.onChange(e.target.value)}
+          />
+        )}
+      />
+      <Controller
+        name="latest_end"
+        control={form.control}
+        render={({ field, fieldState: { error } }) => (
+          <TimeInput
+            label="Кінець роботи"
+            minTime={form.watch("earliest_start")}
+            error={error?.message}
+            {...field}
+            onChange={(e) => field.onChange(e.target.value)}
           />
         )}
       />
