@@ -4,7 +4,7 @@ import { Button, Stack, Tabs } from "@mantine/core";
 
 import { Logo } from "@ui/index.ts";
 
-import { TRetrieveRoutingProblem } from "@app/modules";
+import { isRetrieveRoutingProblemUnsolvable, TRetrieveRoutingProblem } from "@app/modules";
 
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
@@ -67,7 +67,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
           <Tabs.Tab value={ActiveTabs.VEHICLES} disabled={!shipments.length}>
             4. Автомобілі
           </Tabs.Tab>
-          <Tabs.Tab value={ActiveTabs.SOLUTION} disabled={!solution}>
+          <Tabs.Tab value={ActiveTabs.SOLUTION} disabled={!solution || isRetrieveRoutingProblemUnsolvable(solution)}>
             5. Рішення
           </Tabs.Tab>
         </Tabs.List>

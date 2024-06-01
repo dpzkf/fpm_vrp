@@ -73,6 +73,7 @@ export type TSubmitRoutingProblem = {
   id: string;
   status: ESubmitRoutingProblemStatus;
   status_date: string;
+  code?: ESubmitRoutingProblemStatus.UNSOLVABLE;
 };
 
 export type TSubmitRoutingProblemResponse = TSubmitRoutingProblem;

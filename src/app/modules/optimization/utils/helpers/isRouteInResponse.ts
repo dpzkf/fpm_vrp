@@ -2,17 +2,17 @@ import { ESubmitRoutingProblemStatus, TRetrieveRoutingProblemResponse, TSubmitRo
 
 type TResponse = TRetrieveRoutingProblemResponse | TSubmitRoutingProblem;
 
-const isResponseWithStatus = (response: TResponse): response is TSubmitRoutingProblem => {
-  return "status" in response;
+const isResponseWithCode = (response: TResponse): response is TSubmitRoutingProblem => {
+  return "code" in response;
 };
 
 export const isRetrieveRoutingProblemUnsolvable = (
   response?: TRetrieveRoutingProblemResponse | TSubmitRoutingProblem,
 ) => {
   if (!response) return false;
-  if (!isResponseWithStatus(response)) return false;
+  if (!isResponseWithCode(response)) return false;
 
-  return response.status === ESubmitRoutingProblemStatus.UNSOLVABLE;
+  return response.code === ESubmitRoutingProblemStatus.UNSOLVABLE;
 };
 
 export const isRetrieveRoutingProblemResponseWithStatus = (response?: TRetrieveRoutingProblemResponse) => {

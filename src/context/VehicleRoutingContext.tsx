@@ -1,18 +1,24 @@
-import * as React from "react";
-import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useMemo, useState } from "react";
 
-import { TShipments, TVehicles } from "@app/modules";
+import { TDirection, TShipments, TVehicles } from "@app/modules";
 
 import { ActiveTabs } from "@components/Sidebar";
+import polyline from "@mapbox/polyline";
 import { v4 as uuidv4 } from "uuid";
 
 import { LocationType, TLocation } from "../types";
-import { TContextLocations, TContextShipments, TContextVehicles, TVehicleRoutingContext } from "./types.ts";
+import {
+  TContextDirections,
+  TContextLocations,
+  TContextShipments,
+  TContextVehicles,
+  TVehicleRoutingContext,
+} from "./types.ts";
 import { updateState } from "./utiils";
 
 export const VehicleRoutingContext = createContext<TVehicleRoutingContext | null>(null);
 
-export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const VehicleRoutingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ActiveTabs>(ActiveTabs.LOCATIONS_WAREHOUSES);
   const [locations, setLocations] = useState<TContextLocations>([
     {
@@ -27,9 +33,38 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       type: LocationType.DROP_OFF,
       id: uuidv4(),
     },
+    {
+      name: "location_1",
+      coordinates: [35.0702, 48.452277],
+      type: LocationType.DROP_OFF,
+      id: uuidv4(),
+    },
   ]);
-  const [shipments, setShipments] = useState<TContextShipments>([]);
-  const [vehicles, setVehicles] = useState<TContextVehicles>([{ id: uuidv4(), name: "0", capacities: { boxes: 10 } }]);
+  const [shipments, setShipments] = useState<TContextShipments>([
+    {
+      id: uuidv4(),
+      name: "0",
+      from: "Перша Дачна Вулиця 80",
+      to: "Сєрова Вулиця 2",
+      size: { boxes: 1 },
+    },
+    {
+      id: uuidv4(),
+      name: "1",
+      from: "Перша Дачна Вулиця 80",
+      to: "location_1",
+      size: { boxes: 1 },
+    },
+  ]);
+  const [vehicles, setVehicles] = useState<TContextVehicles>([
+    {
+      id: uuidv4(),
+      name: "0",
+      capacities: { boxes: 1 },
+    },
+    { id: uuidv4(), name: "1", capacities: { boxes: 1 } },
+  ]);
+  const [directions, setDirections] = useState<TContextDirections>([]);
 
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);
@@ -71,6 +106,25 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
     setVehicles((prevState) => prevState.filter((el) => el.id !== id));
   }, []);
 
+  const addDirection = useCallback((direction: TDirection[]) => {
+    setDirections(
+      direction.map((el, index) => ({
+        ...el,
+        routes: polyline.toGeoJSON(el.routes[0].geometry, 6),
+        isActive: !index,
+      })),
+    );
+  }, []);
+
+  const updateDirection = useCallback((activeDirectionIndex: number) => {
+    setDirections((prevState) =>
+      prevState.map((item, index) => ({
+        ...item,
+        isActive: index === activeDirectionIndex,
+      })),
+    );
+  }, []);
+
   const getWarehouses = useCallback(() => {
     return [...new Set(locations.filter(({ type }) => type === LocationType.WAREHOUSE).map(({ name }) => name))];
   }, [locations]);
@@ -85,6 +139,7 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       locations,
       shipments,
       vehicles,
+      directions,
       changeActiveTab,
       addLocation,
       updateLocation,
@@ -95,6 +150,8 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       addVehicle,
       updateVehicle,
       deleteVehicle,
+      addDirection,
+      updateDirection,
       getDropOffs,
       getWarehouses,
     }),
@@ -103,6 +160,7 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       locations,
       shipments,
       vehicles,
+      directions,
       changeActiveTab,
       addLocation,
       updateLocation,
@@ -113,6 +171,8 @@ export const VehicleRoutingProvider: React.FC<PropsWithChildren> = ({ children }
       addVehicle,
       updateVehicle,
       deleteVehicle,
+      addDirection,
+      updateDirection,
       getDropOffs,
       getWarehouses,
     ],

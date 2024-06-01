@@ -14,22 +14,24 @@ import InteractiveMap, {
 import { LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
+import { Text } from "@ui/typography";
+
 import { useToast } from "@hooks/common/useToast";
 
 import {
   isRetrieveRoutingProblemResponseWithStatus,
   isRetrieveRoutingProblemUnsolvable,
+  TRoutes,
+  useGetMultipleDirectionsQuery,
   useLazyGetResolvedVehicleRoutingProblemQuery,
   useLazyGetReverseGeocodingQuery,
   useSubmitVehicleRoutingProblemMutation,
 } from "@app/modules";
-import { useGetDirectionsQuery } from "@app/modules/directions";
 
 import { ActiveTabs, Sidebar } from "@components/Sidebar";
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
-import polyline from "@mapbox/polyline";
-import { feature, featureCollection } from "@turf/helpers";
+import { feature } from "@turf/helpers";
 import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
 import { LocationType, TLocation } from "types";
@@ -37,11 +39,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { MapLayers } from "./components";
 import * as Styled from "./styles.ts";
-import { adaptDirectionsData, adaptSubmitData, TViewState } from "./utils";
-import { Text } from "@ui/typography";
+import { adaptSubmitData, routeColorMapper, TViewState } from "./utils";
 
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
+  const { toastError } = useToast();
   const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
 
   const [popupInfo, setPopupInfo] = useState<TLocation | null>(null);
@@ -59,11 +61,22 @@ export const Dashboard = () => {
     getWarehouses,
     vehicles,
     changeActiveTab,
+    addDirection,
+    directions,
   } = useContext(VehicleRoutingContext) as TVehicleRoutingContext;
 
   const [submitVrp, { data: submitVrpData }] = useSubmitVehicleRoutingProblemMutation();
   const [triggerResolvedVrp, { data: resolvedVrpData }] = useLazyGetResolvedVehicleRoutingProblemQuery();
   const [triggerReverseGeocoding] = useLazyGetReverseGeocodingQuery();
+  const { data: directionsData } = useGetMultipleDirectionsQuery(
+    { routes: resolvedVrpData?.routes as TRoutes[] },
+    {
+      skip:
+        !resolvedVrpData ||
+        isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData) ||
+        isRetrieveRoutingProblemUnsolvable(resolvedVrpData),
+    },
+  );
 
   const markers = useMemo(
     () =>
@@ -84,20 +97,14 @@ export const Dashboard = () => {
           color={location.type === LocationType.WAREHOUSE ? "var(--warehouse-color)" : "var(--primary-color)"}
         />
       )),
-    [locations],
+    [locations, activeTab],
   );
-
-  const { data: directionsData } = useGetDirectionsQuery(
-    { waypoints: adaptDirectionsData(resolvedVrpData?.routes?.[0]) },
-    { skip: !resolvedVrpData || isRetrieveRoutingProblemResponseWithStatus(resolvedVrpData) },
-  );
-
-  const { toastError } = useToast();
 
   const handleGetResolvedVrp = async () => {
     if (!submitVrpData) return;
     const res = await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
     if (isRetrieveRoutingProblemUnsolvable(res)) {
+      toggleLoadingOverlay();
       return toastError("Неможливо вирішити цю задачу");
     }
     if (isRetrieveRoutingProblemResponseWithStatus(res)) {
@@ -114,9 +121,21 @@ export const Dashboard = () => {
     return () => clearTimeout(timeoutId);
   }, [submitVrpData?.id, shouldRetry]);
 
+  useEffect(() => {
+    if (!directionsData) return;
+    addDirection(directionsData);
+  }, [directionsData]);
+
   const generateLineString = useCallback(() => {
-    if (directionsData && activeTab === ActiveTabs.SOLUTION) {
-      return featureCollection([feature(polyline.toGeoJSON(directionsData.routes[0].geometry, 6))]);
+    if (directions && activeTab === ActiveTabs.SOLUTION) {
+      return directions
+        .slice()
+        .map(({ routes, isActive }, index) => {
+          const lineFeature = routes;
+          lineFeature.properties = { color: routeColorMapper(index), width: isActive ? 5 : 3 };
+          return lineFeature;
+        })
+        .sort((a) => (a.isActive ? -1 : 1));
     }
 
     if (!shipments) return;
@@ -136,7 +155,7 @@ export const Dashboard = () => {
     };
 
     return feature(geometry);
-  }, [shipments, locations, directionsData, activeTab]);
+  }, [shipments, locations, directions, activeTab]);
 
   const handleSetMarker = async (e: MapLayerMouseEvent) => {
     if (activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES) return;

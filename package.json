@@ -43,13 +43,17 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/lodash.isequal": "^4.5.8",
+    "@types/lodash.uniqueid": "^4.0.9",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
+    "@types/mapbox__polyline": "^1.0.5",
     "@types/mapbox-gl": "^3.1.0",
     "@types/node": "^20.12.7",
     "@types/qs": "^6.9.15",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/react-helmet": "^6.1.11",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.2.0",

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 
 import { Radio, Table } from "@mantine/core";
 
@@ -6,6 +6,8 @@ import { routeColorMapper } from "@pages/Dashboard/utils";
 
 import { TRetrieveRoutingProblem } from "@app/modules";
 
+import { TVehicleRoutingContext } from "@context/types.ts";
+import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 import { formatISOStringToTime } from "@utils/helpers";
 import uniqueId from "lodash.uniqueid";
 
@@ -14,12 +16,21 @@ type TSolutionTable = {
 };
 
 export const SolutionTable: FC<TSolutionTable> = ({ solution }) => {
+  const { updateDirection } = useContext(VehicleRoutingContext) as TVehicleRoutingContext;
   const [selectedRow, setSelectedRow] = useState<number>(0);
 
-  const rows = solution?.routes.map(({ vehicle, stops }, index) => (
+  const rows = solution?.routes?.map(({ vehicle, stops }, index) => (
     <Table.Tr key={uniqueId(`${vehicle}_`)}>
       <Table.Td style={{ verticalAlign: "middle" }}>
-        <Radio size="xs" checked={selectedRow === index} variant="outline" onChange={() => setSelectedRow(index)} />
+        <Radio
+          size="xs"
+          checked={selectedRow === index}
+          variant="outline"
+          onChange={() => {
+            updateDirection(index);
+            setSelectedRow(index);
+          }}
+        />
       </Table.Td>
       <Table.Td>{vehicle}</Table.Td>
       <Table.Td style={{ verticalAlign: "middle" }}>

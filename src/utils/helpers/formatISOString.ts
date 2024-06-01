@@ -16,7 +16,8 @@ export const convertTimeToISOString = (timeString: string) => {
 
 export const formatISOStringToTime = (time?: string) => {
   if (!time) return;
-  return format(parseISO(time), "HH:mm");
+  const parsedTime = parseISO(time);
+  return format(parsedTime, "HH:mm");
 };
 
 export const formatDateToTime = (time?: Date) => {

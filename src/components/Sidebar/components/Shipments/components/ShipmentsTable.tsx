@@ -55,7 +55,7 @@ export const ShipmentsTable = () => {
       <Table.Thead>
         <Table.Tr>
           <Table.Th>Звідки</Table.Th>
-          <Table.Th>Куді</Table.Th>
+          <Table.Th>Куди</Table.Th>
           <Table.Th>Кількість</Table.Th>
           <Table.Th>Час</Table.Th>
           <Table.Th />

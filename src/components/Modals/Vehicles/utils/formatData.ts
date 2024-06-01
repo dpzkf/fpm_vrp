@@ -1,9 +1,9 @@
 import { TVehicles } from "@app/modules";
 
+import { convertTimeToISOString } from "@utils/helpers";
 import { z } from "zod";
 
 import { vehiclesFormSchema } from "../Form";
-import { convertTimeToISOString } from "@utils/helpers";
 
 export const formatData = (vehicle: z.infer<typeof vehiclesFormSchema>): Partial<TVehicles> => {
   const { capacity, earliest_start, latest_end } = vehicle;
