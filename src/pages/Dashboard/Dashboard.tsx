@@ -68,7 +68,7 @@ export const Dashboard = () => {
   const [submitVrp, { data: submitVrpData }] = useSubmitVehicleRoutingProblemMutation();
   const [triggerResolvedVrp, { data: resolvedVrpData }] = useLazyGetResolvedVehicleRoutingProblemQuery();
   const [triggerReverseGeocoding] = useLazyGetReverseGeocodingQuery();
-  const { data: directionsData } = useGetMultipleDirectionsQuery(
+  const { data: directionsData, isLoading: isDerectionsLoading } = useGetMultipleDirectionsQuery(
     { routes: resolvedVrpData?.routes as TRoutes[] },
     {
       skip:
@@ -110,6 +110,7 @@ export const Dashboard = () => {
     if (isRetrieveRoutingProblemResponseWithStatus(res)) {
       return setShouldRetry((prevState) => !prevState);
     }
+    addDirection([]);
     changeActiveTab(ActiveTabs.SOLUTION);
     toggleLoadingOverlay();
     setSubmittedData({ locations, vehicles, shipments });
@@ -122,9 +123,9 @@ export const Dashboard = () => {
   }, [submitVrpData?.id, shouldRetry]);
 
   useEffect(() => {
-    if (!directionsData) return;
+    if (!directionsData || isDerectionsLoading) return;
     addDirection(directionsData);
-  }, [directionsData]);
+  }, [directionsData, isDerectionsLoading]);
 
   const generateLineString = useCallback(() => {
     if (directions && activeTab === ActiveTabs.SOLUTION) {
