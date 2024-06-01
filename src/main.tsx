@@ -9,9 +9,11 @@ import { ModalsProvider } from "@mantine/modals";
 import App from "./App.tsx";
 import { store } from "./app/store.ts";
 import { GlobalStyles } from "./assets/styles/globalStyles.ts";
-import { BREAKPOINTS, MANTINE_SCALE } from "./constants";
-import { MODAL_CONFIG, MODAL_PROPS } from "./constants/modalConfig.ts";
+import { BREAKPOINTS, MANTINE_SCALE, MODAL_CONFIG, MODAL_PROPS } from "./utils";
 
+import "@mantine/core/styles.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 const theme = createTheme({

@@ -32,6 +32,7 @@ export type TLocations = {
 };
 
 export type TVehicles = {
+  id: string;
   name: string;
   start_location?: string;
   end_location?: string;
@@ -42,12 +43,13 @@ export type TVehicles = {
   latest_end?: string;
 };
 
-type TTimes = {
+export type TTimes = {
   earliest: string;
   latest: string;
 };
 
 export type TShipments = {
+  id: string;
   name: string;
   from: string;
   to: string;
@@ -64,12 +66,14 @@ export enum ESubmitRoutingProblemStatus {
   PENDING = "pending",
   PROCESSING = "processing",
   COMPLETE = "ok",
+  UNSOLVABLE = "unsolvable",
 }
 
 export type TSubmitRoutingProblem = {
   id: string;
   status: ESubmitRoutingProblemStatus;
   status_date: string;
+  code?: ESubmitRoutingProblemStatus.UNSOLVABLE;
 };
 
 export type TSubmitRoutingProblemResponse = TSubmitRoutingProblem;
@@ -77,8 +81,8 @@ export type TSubmitRoutingProblemResponse = TSubmitRoutingProblem;
 export type TSubmitRoutingProblemBody = {
   version: 1;
   locations: TLocations[];
-  vehicles: TVehicles[];
-  shipments: TShipments[];
+  vehicles: Omit<TVehicles, "id">[];
+  shipments: Omit<TShipments, "id">[];
 };
 
 export type TSubmitRouting = TSubmitRoutingProblemBody;

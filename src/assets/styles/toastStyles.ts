@@ -13,7 +13,7 @@ export const StyledToastContainer = styled(ToastContainer)`
   }
 
   .Toastify__toast-theme--colored.Toastify__toast--success {
-    background: var(--role-green);
+    background: var(--green);
   }
 
   .Toastify__toast-theme--colored.Toastify__toast--error {

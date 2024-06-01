@@ -29,7 +29,8 @@
       "@utils/*": ["./utils/*"],
       "@constants/*": ["./constants/*"],
       "@ui/*": ["./ui-kit/*"],
-      "@app/*": ["./app/*"]
+      "@app/*": ["./app/*"],
+      "@context/*": ["./context/*"]
     },
     "typeRoots": ["node_modules/@types", "./types"]
   },
