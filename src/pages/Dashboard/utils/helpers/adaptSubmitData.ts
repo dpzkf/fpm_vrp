@@ -1,16 +1,28 @@
 import { TLocations, TShipments, TSubmitRouting, TVehicles } from "@app/modules";
 
-import { TMarkers } from "../index.ts";
+import { TLocation } from "types";
 
-export const adaptSubmitData = (data: TMarkers[]): TSubmitRouting => {
-  const locations: TLocations[] = data.map(({ name, longitude, latitude }) => ({
+export const adaptSubmitData = (
+  locationsData: TLocation[],
+  shipmentsData: TShipments[],
+  vehiclesData: TVehicles[],
+): TSubmitRouting => {
+  const locations: TLocations[] = locationsData.map(({ name, coordinates }) => ({
     name,
-    coordinates: [longitude, latitude],
+    coordinates,
   }));
-  const vehicles: TVehicles[] = [{ name: "0" }];
-  const shipments: TShipments[] = data
-    .slice(1)
-    .map(({ name }, index) => ({ name: String(index), from: data[0].name, to: name }));
-
-  return { version: 1, locations, vehicles, shipments };
+  const shipments = shipmentsData.map(({ name, from, to, size, dropoff_times }) => ({
+    name,
+    from,
+    to,
+    size,
+    dropoff_times,
+  }));
+  const vehicles = vehiclesData.map(({ name, capacities, earliest_start, latest_end }) => ({
+    name,
+    capacities,
+    earliest_start,
+    latest_end,
+  }));
+  return { version: 1, locations, shipments, vehicles };
 };

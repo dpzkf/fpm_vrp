@@ -4,17 +4,18 @@ import { StyledToastContainer } from "@assets/styles/toastStyles.ts";
 
 import { Dashboard } from "@pages/Dashboard";
 
-import "react-toastify/dist/ReactToastify.css";
+import { VehicleRoutingProvider } from "./context";
 
 function App() {
   return (
     <>
       <Helmet>
         <title>DELIVER-ROUTE</title>
-        <link rel="icon" href="/vite.svg" />
+        <link rel="icon" href="/fpm_vrp/dr_logo.svg" />
       </Helmet>
-      {/*<AppRouter />*/}
-      <Dashboard />
+      <VehicleRoutingProvider>
+        <Dashboard />
+      </VehicleRoutingProvider>
       <StyledToastContainer hideProgressBar />
     </>
   );
