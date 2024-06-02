@@ -2,7 +2,7 @@ import { FC, useContext, useMemo } from "react";
 
 import { Button, Group, Stack, Tabs } from "@mantine/core";
 
-import { DisableNextButtonTooltip, Logo } from "@ui/index.ts";
+import { Logo, NextButtonTooltip } from "@ui/index.ts";
 
 import { useIsDesktop } from "@hooks/common";
 
@@ -10,6 +10,7 @@ import { isRetrieveRoutingProblemUnsolvable, TRetrieveRoutingProblem } from "@ap
 
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
+import { MOCKED_LOCATIONS, MOCKED_SHIPMENTS, MOCKED_VEHICLES } from "@utils/constants";
 import isEqual from "lodash.isequal";
 import { LocationType } from "types";
 
@@ -18,7 +19,6 @@ import { Solution } from "./components/Solution";
 import { Vehicles } from "./components/Vehicles";
 import * as Styled from "./styles.ts";
 import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
-import { MOCKED_LOCATIONS, MOCKED_SHIPMENTS, MOCKED_VEHICLES } from "@utils/constants";
 
 type TSidebar = {
   solution?: TRetrieveRoutingProblem;
@@ -120,7 +120,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
           </Button>
         )}
         {activeTab !== ActiveTabs.SOLUTION && activeTab !== ActiveTabs.VEHICLES && (
-          <DisableNextButtonTooltip disabled={!isNextButtonDisabled}>
+          <NextButtonTooltip disabled={!isNextButtonDisabled}>
             <Button
               disabled={isNextButtonDisabled}
               variant="filled"
@@ -128,10 +128,10 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
             >
               Далі
             </Button>
-          </DisableNextButtonTooltip>
+          </NextButtonTooltip>
         )}
         {activeTab === ActiveTabs.VEHICLES && (
-          <DisableNextButtonTooltip disabled={!isNextButtonDisabled}>
+          <NextButtonTooltip disabled={!isNextButtonDisabled}>
             <Button
               disabled={isNextButtonDisabled}
               variant="filled"
@@ -146,7 +146,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
             >
               Знайти рішення
             </Button>
-          </DisableNextButtonTooltip>
+          </NextButtonTooltip>
         )}
       </Styled.ButtonWrapper>
     </Tabs>

@@ -18,12 +18,11 @@ const theme = {
   },
 };
 
-export const AddressAutofill = forwardRef<HTMLInputElement, TAddressAutofill>((props, reference) => {
+export const AddressAutofill = forwardRef<HTMLInputElement, TAddressAutofill>(({ onRetrieve }, reference) => {
   const [inputValue, setInputValue] = useState("");
   return (
     //@ts-ignore
     <Geocoder
-      {...props}
       theme={theme}
       ref={reference}
       accessToken={MAPB0X_TOKEN}
@@ -35,6 +34,10 @@ export const AddressAutofill = forwardRef<HTMLInputElement, TAddressAutofill>((p
       placeholder="Введіть адресу, щоб додати точку"
       onChange={(d) => {
         setInputValue(d);
+      }}
+      onRetrieve={(res) => {
+        onRetrieve(res);
+        setInputValue("");
       }}
     />
   );

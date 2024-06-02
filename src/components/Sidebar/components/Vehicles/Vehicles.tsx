@@ -45,7 +45,7 @@ export const Vehicles = () => {
           Додати автомобіль
         </Button>
       </Group>
-      {!!vehicles.length && <VehiclesTable />}
+      {!!vehicles?.length && <VehiclesTable />}
     </Stack>
   );
 };

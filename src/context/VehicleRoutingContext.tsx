@@ -40,7 +40,14 @@ export const VehicleRoutingProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const deleteLocation = useCallback((id: string) => {
-    setLocations((prevState) => prevState.filter((el) => el.id !== id));
+    setLocations((prevLocations) => {
+      const locationToDelete = prevLocations.find((location) => location.id === id);
+      if (!locationToDelete) return prevLocations;
+      setShipments((prevShipments) =>
+        prevShipments.filter(({ from, to }) => from !== locationToDelete.name && to !== locationToDelete.name),
+      );
+      return prevLocations.filter((location) => location.id !== id);
+    });
   }, []);
 
   const addShipment = useCallback((shipment: TShipments | TShipments[]) => {

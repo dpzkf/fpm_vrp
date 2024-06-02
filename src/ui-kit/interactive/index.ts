@@ -1,1 +1,1 @@
-export * from "./DisabledNextButtonTooltip";
+export * from "./NextButtonTooltip";

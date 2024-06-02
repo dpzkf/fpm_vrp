@@ -22,7 +22,7 @@ export const Solution: FC<TSolution> = ({ solution }) => {
       <Text fw={500} textSize={18}>
         Рішення
       </Text>
-      {!!solution?.routes.length && <SolutionTable solution={solution} />}
+      {!!solution?.routes?.length && <SolutionTable solution={solution} />}
     </Stack>
   );
 };
