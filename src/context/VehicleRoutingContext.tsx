@@ -4,7 +4,6 @@ import { TDirection, TShipments, TVehicles } from "@app/modules";
 
 import { ActiveTabs } from "@components/Sidebar";
 import polyline from "@mapbox/polyline";
-import { v4 as uuidv4 } from "uuid";
 
 import { LocationType, TLocation } from "../types";
 import {
@@ -20,57 +19,19 @@ export const VehicleRoutingContext = createContext<TVehicleRoutingContext | null
 
 export const VehicleRoutingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ActiveTabs>(ActiveTabs.LOCATIONS_WAREHOUSES);
-  const [locations, setLocations] = useState<TContextLocations>([
-    {
-      name: "Перша Дачна Вулиця 80",
-      coordinates: [35.0369429788974, 48.428788936916646],
-      id: uuidv4(),
-      type: LocationType.WAREHOUSE,
-    },
-    {
-      name: "Сєрова Вулиця 2",
-      coordinates: [35.03710623364512, 48.46818956311154],
-      type: LocationType.DROP_OFF,
-      id: uuidv4(),
-    },
-    {
-      name: "location_1",
-      coordinates: [35.0702, 48.452277],
-      type: LocationType.DROP_OFF,
-      id: uuidv4(),
-    },
-  ]);
-  const [shipments, setShipments] = useState<TContextShipments>([
-    {
-      id: uuidv4(),
-      name: "0",
-      from: "Перша Дачна Вулиця 80",
-      to: "Сєрова Вулиця 2",
-      size: { boxes: 1 },
-    },
-    {
-      id: uuidv4(),
-      name: "1",
-      from: "Перша Дачна Вулиця 80",
-      to: "location_1",
-      size: { boxes: 1 },
-    },
-  ]);
-  const [vehicles, setVehicles] = useState<TContextVehicles>([
-    {
-      id: uuidv4(),
-      name: "0",
-      capacities: { boxes: 1 },
-    },
-    { id: uuidv4(), name: "1", capacities: { boxes: 1 } },
-  ]);
+  const [locations, setLocations] = useState<TContextLocations>([]);
+  const [shipments, setShipments] = useState<TContextShipments>([]);
+  const [vehicles, setVehicles] = useState<TContextVehicles>([]);
   const [directions, setDirections] = useState<TContextDirections>([]);
 
   const changeActiveTab = useCallback((tab: ActiveTabs) => {
     setActiveTab(tab);
   }, []);
 
-  const addLocation = useCallback((location: TLocation) => {
+  const addLocation = useCallback((location: TLocation | TLocation[]) => {
+    if (Array.isArray(location)) {
+      return setLocations(location);
+    }
     setLocations((prevState) => [...prevState, location]);
   }, []);
 
@@ -82,7 +43,10 @@ export const VehicleRoutingProvider: FC<PropsWithChildren> = ({ children }) => {
     setLocations((prevState) => prevState.filter((el) => el.id !== id));
   }, []);
 
-  const addShipment = useCallback((shipment: TShipments) => {
+  const addShipment = useCallback((shipment: TShipments | TShipments[]) => {
+    if (Array.isArray(shipment)) {
+      return setShipments(shipment);
+    }
     setShipments((prevState) => [...prevState, shipment]);
   }, []);
 
@@ -94,7 +58,10 @@ export const VehicleRoutingProvider: FC<PropsWithChildren> = ({ children }) => {
     setShipments((prevState) => prevState.filter((el) => el.id !== id));
   }, []);
 
-  const addVehicle = useCallback((vehicle: TVehicles) => {
+  const addVehicle = useCallback((vehicle: TVehicles | TVehicles[]) => {
+    if (Array.isArray(vehicle)) {
+      return setVehicles(vehicle);
+    }
     setVehicles((prevState) => [...prevState, vehicle]);
   }, []);
 

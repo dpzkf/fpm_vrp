@@ -1,8 +1,8 @@
 import { FC, useContext, useMemo } from "react";
 
-import { Button, Stack, Tabs } from "@mantine/core";
+import { Button, Group, Stack, Tabs } from "@mantine/core";
 
-import { DisabledNextButtonTooltip, Logo } from "@ui/index.ts";
+import { DisableNextButtonTooltip, Logo } from "@ui/index.ts";
 
 import { useIsDesktop } from "@hooks/common";
 
@@ -18,6 +18,7 @@ import { Solution } from "./components/Solution";
 import { Vehicles } from "./components/Vehicles";
 import * as Styled from "./styles.ts";
 import { ActiveTabs, handleNextStep, handlePreviousStep } from "./utils";
+import { MOCKED_LOCATIONS, MOCKED_SHIPMENTS, MOCKED_VEHICLES } from "@utils/constants";
 
 type TSidebar = {
   solution?: TRetrieveRoutingProblem;
@@ -27,9 +28,18 @@ type TSidebar = {
 
 export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedData }) => {
   const isDesktop = useIsDesktop();
-  const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs, locations } = useContext(
-    VehicleRoutingContext,
-  ) as TVehicleRoutingContext;
+  const {
+    activeTab,
+    changeActiveTab,
+    shipments,
+    vehicles,
+    getWarehouses,
+    getDropOffs,
+    locations,
+    addLocation,
+    addShipment,
+    addVehicle,
+  } = useContext(VehicleRoutingContext) as TVehicleRoutingContext;
 
   const warehouseLocationLength = getWarehouses().length;
   const dropOffLocationLength = getDropOffs().length;
@@ -56,7 +66,20 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
       onChange={(value) => changeActiveTab(value as ActiveTabs)}
     >
       <Stack p={isDesktop ? 16 : 0}>
-        <Logo />
+        <Group justify="space-between">
+          <Logo />
+          <Button
+            variant="default"
+            onClick={() => {
+              addLocation(MOCKED_LOCATIONS);
+              addShipment(MOCKED_SHIPMENTS);
+              addVehicle(MOCKED_VEHICLES);
+              changeActiveTab(ActiveTabs.VEHICLES);
+            }}
+          >
+            Автозаповнення
+          </Button>
+        </Group>
         <Tabs.List grow>
           <Tabs.Tab value={ActiveTabs.LOCATIONS_WAREHOUSES}>1. Склади</Tabs.Tab>
           <Tabs.Tab value={ActiveTabs.LOCATIONS_DROP_OFFS} disabled={!warehouseLocationLength}>
@@ -97,7 +120,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
           </Button>
         )}
         {activeTab !== ActiveTabs.SOLUTION && activeTab !== ActiveTabs.VEHICLES && (
-          <DisabledNextButtonTooltip disabled={!isNextButtonDisabled}>
+          <DisableNextButtonTooltip disabled={!isNextButtonDisabled}>
             <Button
               disabled={isNextButtonDisabled}
               variant="filled"
@@ -105,10 +128,10 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
             >
               Далі
             </Button>
-          </DisabledNextButtonTooltip>
+          </DisableNextButtonTooltip>
         )}
         {activeTab === ActiveTabs.VEHICLES && (
-          <DisabledNextButtonTooltip disabled={!isNextButtonDisabled}>
+          <DisableNextButtonTooltip disabled={!isNextButtonDisabled}>
             <Button
               disabled={isNextButtonDisabled}
               variant="filled"
@@ -123,7 +146,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
             >
               Знайти рішення
             </Button>
-          </DisabledNextButtonTooltip>
+          </DisableNextButtonTooltip>
         )}
       </Styled.ButtonWrapper>
     </Tabs>
