@@ -19,7 +19,9 @@ export const Solution: FC<TSolution> = ({ solution }) => {
       <Styled.HintWrapper>
         <Text c="var(--primary-color)">Вирішене завдання</Text>
       </Styled.HintWrapper>
-      <Text fw={500}>Рішення</Text>
+      <Text fw={500} textSize={18}>
+        Рішення
+      </Text>
       {!!solution?.routes.length && <SolutionTable solution={solution} />}
     </Stack>
   );

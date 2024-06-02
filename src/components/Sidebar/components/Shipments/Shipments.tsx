@@ -25,7 +25,9 @@ export const Shipments = () => {
         <Text c="var(--primary-color)">Виберіть кількість відправлень, необхідних для отримання</Text>
       </Styled.HintWrapper>
       <Group justify="space-between">
-        <Text fw={500}>Відправлення</Text>
+        <Text fw={500} textSize={18}>
+          Відправлення
+        </Text>
         <Button
           variant="white"
           onClick={() => {
