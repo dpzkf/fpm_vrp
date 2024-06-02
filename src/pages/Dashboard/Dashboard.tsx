@@ -104,6 +104,20 @@ export const Dashboard = () => {
     [locations, activeTab],
   );
 
+  const resolvedStops: TResolvedCoordinates[] | null = useMemo(() => {
+    if (!resolvedVrpData) return null;
+    return resolvedVrpData.routes.flatMap(({ vehicle, stops }) => {
+      return stops.map(({ location_metadata }, index) => ({
+        stops: feature({
+          type: "Point",
+          coordinates: location_metadata.snapped_coordinate,
+        }),
+        stopNumber: index + 1,
+        vehicle,
+      }));
+    });
+  }, [resolvedVrpData]);
+
   const handleGetResolvedVrp = async () => {
     if (!submitVrpData) return;
     const res = await triggerResolvedVrp({ id: submitVrpData.id }).unwrap();
@@ -234,7 +248,7 @@ export const Dashboard = () => {
           {isDesktop && <FullscreenControl position="top-right" />}
           <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
-          {markers}
+          {activeTab !== ActiveTabs.SOLUTION && markers}
           {popupInfo && (
             <Popup
               longitude={popupInfo.coordinates[0]}
@@ -246,7 +260,7 @@ export const Dashboard = () => {
             </Popup>
           )}
           {activeTab !== ActiveTabs.LOCATIONS_WAREHOUSES && activeTab !== ActiveTabs.LOCATIONS_DROP_OFFS && (
-            <MapLayers data={generateLineString()} />
+            <MapLayers data={generateLineString()} resolvedStops={resolvedStops} />
           )}
         </InteractiveMap>
         {!isDesktop && !openedDrawer && (
