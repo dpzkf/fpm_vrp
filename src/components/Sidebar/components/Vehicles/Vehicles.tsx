@@ -11,6 +11,7 @@ import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 import { MAX_VEHICLES } from "@utils/constants";
 
+import * as Styled from "../../styles.ts";
 import { VehiclesTable } from "./components";
 
 export const Vehicles = () => {
@@ -19,6 +20,9 @@ export const Vehicles = () => {
   const { toastError } = useToast();
   return (
     <Stack gap={16}>
+      <Styled.HintWrapper>
+        <Text c="var(--primary-color)">Виберіть необхідну кількість транспортних засобів</Text>
+      </Styled.HintWrapper>
       <Group justify="space-between">
         <Text fw={500}>Автомобілі</Text>
         <Button

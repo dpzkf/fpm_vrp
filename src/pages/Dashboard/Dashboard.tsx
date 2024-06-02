@@ -133,10 +133,11 @@ export const Dashboard = () => {
         .slice()
         .map(({ routes, isActive }, index) => {
           const lineFeature = routes;
-          lineFeature.properties = { color: routeColorMapper(index), width: isActive ? 5 : 3 };
+          lineFeature.properties = { color: routeColorMapper(index), width: isActive ? 10 : 5 };
+          lineFeature.isActive = isActive;
           return lineFeature;
         })
-        .sort((a) => (a.isActive ? -1 : 1));
+        .sort((a) => (a.isActive ? 1 : -1));
     }
 
     if (!shipments) return;

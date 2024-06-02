@@ -9,7 +9,7 @@ type TAddressAutofill = {
   onRetrieve: (res: Feature) => void;
 };
 
-export const AddressAutofill = forwardRef<unknown, TAddressAutofill>((props, reference) => {
+export const AddressAutofill = forwardRef<HTMLInputElement, TAddressAutofill>((props, reference) => {
   const [inputValue, setInputValue] = useState("");
   return (
     //@ts-ignore
@@ -22,7 +22,7 @@ export const AddressAutofill = forwardRef<unknown, TAddressAutofill>((props, ref
         country: "ua",
       }}
       value={inputValue}
-      placeholder="Пошук"
+      placeholder="Введіть адресу, щоб додати точку"
       onChange={(d) => {
         setInputValue(d);
       }}

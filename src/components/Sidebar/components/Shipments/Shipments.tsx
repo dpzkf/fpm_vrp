@@ -10,6 +10,7 @@ import { useToast } from "@hooks/common/useToast";
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
 
+import * as Styled from "../../styles.ts";
 import { ShipmentsTable } from "./components";
 
 export const Shipments = () => {
@@ -20,6 +21,9 @@ export const Shipments = () => {
   const { toastError } = useToast();
   return (
     <Stack gap={16}>
+      <Styled.HintWrapper>
+        <Text c="var(--primary-color)">Виберіть кількість відправлень, необхідних для отримання</Text>
+      </Styled.HintWrapper>
       <Group justify="space-between">
         <Text fw={500}>Відправлення</Text>
         <Button

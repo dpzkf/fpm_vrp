@@ -2,7 +2,7 @@ import { FC, useContext, useMemo } from "react";
 
 import { Button, Stack, Tabs } from "@mantine/core";
 
-import { Logo } from "@ui/index.ts";
+import { DisabledNextButtonTooltip, Logo } from "@ui/index.ts";
 
 import { isRetrieveRoutingProblemUnsolvable, TRetrieveRoutingProblem } from "@app/modules";
 
@@ -102,29 +102,33 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
           </Button>
         )}
         {activeTab !== ActiveTabs.SOLUTION && activeTab !== ActiveTabs.VEHICLES && (
-          <Button
-            disabled={isNextButtonDisabled}
-            variant="filled"
-            onClick={() => changeActiveTab(handleNextStep(activeTab))}
-          >
-            Далі
-          </Button>
+          <DisabledNextButtonTooltip disabled={!isNextButtonDisabled}>
+            <Button
+              disabled={isNextButtonDisabled}
+              variant="filled"
+              onClick={() => changeActiveTab(handleNextStep(activeTab))}
+            >
+              Далі
+            </Button>
+          </DisabledNextButtonTooltip>
         )}
         {activeTab === ActiveTabs.VEHICLES && (
-          <Button
-            disabled={isNextButtonDisabled}
-            variant="filled"
-            color="teal"
-            onClick={() => {
-              if (!hasDataChanged) {
-                handleFindSolution();
-                return;
-              }
-              changeActiveTab(handleNextStep(activeTab));
-            }}
-          >
-            Знайти рішення
-          </Button>
+          <DisabledNextButtonTooltip disabled={!isNextButtonDisabled}>
+            <Button
+              disabled={isNextButtonDisabled}
+              variant="filled"
+              color="teal"
+              onClick={() => {
+                if (!hasDataChanged) {
+                  handleFindSolution();
+                  return;
+                }
+                changeActiveTab(handleNextStep(activeTab));
+              }}
+            >
+              Знайти рішення
+            </Button>
+          </DisabledNextButtonTooltip>
         )}
       </Styled.ButtonWrapper>
     </Tabs>
