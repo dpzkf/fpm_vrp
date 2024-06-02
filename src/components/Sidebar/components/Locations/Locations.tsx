@@ -62,7 +62,7 @@ export const Locations: FC<TLocations> = ({ locationType }) => {
         )}
       </Group>
       <AddressAutofill onRetrieve={handleSetLocation} />
-      <LocationsTable data={filteredLocations} />
+      {!!filteredLocations.length && <LocationsTable data={filteredLocations} />}
     </Stack>
   );
 };

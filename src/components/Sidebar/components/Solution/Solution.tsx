@@ -6,8 +6,8 @@ import { Text } from "@ui/typography";
 
 import { TRetrieveRoutingProblem } from "@app/modules";
 
-import { SolutionTable } from "./components";
 import * as Styled from "../../styles.ts";
+import { SolutionTable } from "./components";
 
 type TSolution = {
   solution?: TRetrieveRoutingProblem;
@@ -20,7 +20,7 @@ export const Solution: FC<TSolution> = ({ solution }) => {
         <Text c="var(--primary-color)">Вирішене завдання</Text>
       </Styled.HintWrapper>
       <Text fw={500}>Рішення</Text>
-      <SolutionTable solution={solution} />
+      {!!solution?.routes.length && <SolutionTable solution={solution} />}
     </Stack>
   );
 };

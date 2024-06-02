@@ -43,7 +43,7 @@ export const Vehicles = () => {
           Додати автомобіль
         </Button>
       </Group>
-      <VehiclesTable />
+      {!!vehicles.length && <VehiclesTable />}
     </Stack>
   );
 };
