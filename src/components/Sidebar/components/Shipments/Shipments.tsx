@@ -48,7 +48,7 @@ export const Shipments = () => {
           Додати відправлення
         </Button>
       </Group>
-      {!!shipments.length && <ShipmentsTable />}
+      {!!shipments?.length && <ShipmentsTable />}
     </Stack>
   );
 };
