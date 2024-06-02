@@ -36,7 +36,7 @@ import { IconMenu2 } from "@tabler/icons-react";
 import { feature } from "@turf/helpers";
 import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
-import { LocationType, TLocation, TResolvedCoordinates } from "types";
+import { LocationType, TLocation } from "types";
 import { v4 as uuidv4 } from "uuid";
 
 import { MapLayers } from "./components";
