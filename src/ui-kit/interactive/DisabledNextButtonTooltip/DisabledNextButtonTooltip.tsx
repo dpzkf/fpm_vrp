@@ -1,4 +1,5 @@
 import { FC, PropsWithChildren } from "react";
+
 import { Tooltip, TooltipProps } from "@mantine/core";
 
 type TDisabledNextButtonTooltip = PropsWithChildren & Omit<TooltipProps, "label">;

@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 
+import { Feature, Geometry } from "@turf/helpers";
+
 export enum LocationType {
   WAREHOUSE = "WAREHOUSE",
   DROP_OFF = "DROP_OFF",
@@ -31,4 +33,10 @@ export type TModalForm = {
    * Callback that is called when the form is submitted with an error.
    */
   onSubmitError?: (error: string) => void;
+};
+
+export type TResolvedCoordinates = {
+  stops: Feature<Geometry>;
+  stopNumber: number;
+  vehicle: string;
 };

@@ -1,4 +1,4 @@
-import { ESubmitRoutingProblemStatus, TRetrieveRoutingProblemResponse, TSubmitRoutingProblem } from "../types.ts";
+import { ESubmitRoutingProblemStatus, TRetrieveRoutingProblemResponse, TSubmitRoutingProblem } from "../../types.ts";
 
 type TResponse = TRetrieveRoutingProblemResponse | TSubmitRoutingProblem;
 

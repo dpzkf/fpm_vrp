@@ -14,6 +14,7 @@ const theme = {
     borderRadius: "4.57px",
     border: "1px solid #ced4da",
     boxShadow: "none",
+    color: "#000",
   },
 };
 

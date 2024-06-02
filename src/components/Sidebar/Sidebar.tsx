@@ -48,7 +48,13 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
     [locations, shipments, vehicles, submittedData],
   );
   return (
-    <Tabs value={activeTab} onChange={(value) => changeActiveTab(value as ActiveTabs)}>
+    <Tabs
+      display="flex"
+      h="100%"
+      style={{ flexDirection: "column" }}
+      value={activeTab}
+      onChange={(value) => changeActiveTab(value as ActiveTabs)}
+    >
       <Stack p={isDesktop ? 16 : 0}>
         <Logo />
         <Tabs.List grow>
