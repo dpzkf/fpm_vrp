@@ -11,11 +11,12 @@ import InteractiveMap, {
   ScaleControl,
 } from "react-map-gl";
 
-import { LoadingOverlay } from "@mantine/core";
+import { ActionIcon, Affix, Drawer, LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 import { Text } from "@ui/typography";
 
+import { useIsDesktop } from "@hooks/common";
 import { useToast } from "@hooks/common/useToast";
 
 import {
@@ -31,6 +32,7 @@ import {
 import { ActiveTabs, Sidebar } from "@components/Sidebar";
 import { TVehicleRoutingContext } from "@context/types.ts";
 import { VehicleRoutingContext } from "@context/VehicleRoutingContext.tsx";
+import { IconMenu2 } from "@tabler/icons-react";
 import { feature } from "@turf/helpers";
 import { MAX_DROP_OFFS, MAX_PICKUP, VIEW_STATE } from "@utils/constants";
 import uniqueId from "lodash.uniqueid";
@@ -44,12 +46,14 @@ import { adaptSubmitData, routeColorMapper, TViewState } from "./utils";
 export const Dashboard = () => {
   const mapRef = useRef<MapRef | null>(null);
   const { toastError } = useToast();
-  const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
+  const isDesktop = useIsDesktop();
 
+  const [viewState, setViewState] = useState<TViewState>(VIEW_STATE);
   const [popupInfo, setPopupInfo] = useState<TLocation | null>(null);
   const [shouldRetry, setShouldRetry] = useState<boolean>(false);
   const [submittedData, setSubmittedData] = useState<Record<string, unknown> | null>(null);
   const [isLoadingOverlayVisible, { toggle: toggleLoadingOverlay }] = useDisclosure(false);
+  const [openedDrawer, { open, close }] = useDisclosure(false);
 
   const {
     activeTab,
@@ -204,7 +208,15 @@ export const Dashboard = () => {
   return (
     <Styled.Wrapper>
       <LoadingOverlay visible={isLoadingOverlayVisible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-      <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} submittedData={submittedData} />
+      {isDesktop ? (
+        <Styled.SideBarWrapper>
+          <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} submittedData={submittedData} />
+        </Styled.SideBarWrapper>
+      ) : (
+        <Drawer opened={openedDrawer} onClose={close}>
+          <Sidebar handleFindSolution={handleFindSolution} solution={resolvedVrpData} submittedData={submittedData} />
+        </Drawer>
+      )}
       <Styled.MapWrapper>
         <InteractiveMap
           reuseMaps
@@ -219,7 +231,7 @@ export const Dashboard = () => {
           {...viewState}
         >
           <GeolocateControl position="top-right" />
-          <FullscreenControl position="top-right" />
+          {isDesktop && <FullscreenControl position="top-right" />}
           <NavigationControl position="top-right" showCompass={false} />
           <ScaleControl />
           {markers}
@@ -237,6 +249,13 @@ export const Dashboard = () => {
             <MapLayers data={generateLineString()} />
           )}
         </InteractiveMap>
+        {!isDesktop && !openedDrawer && (
+          <Affix position={{ top: 10, left: 10 }}>
+            <ActionIcon onClick={open} color="blue" radius="xl" size={60}>
+              <IconMenu2 stroke={1.5} size={30} />
+            </ActionIcon>
+          </Affix>
+        )}
       </Styled.MapWrapper>
     </Styled.Wrapper>
   );

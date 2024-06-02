@@ -4,6 +4,8 @@ import { Button, Stack, Tabs } from "@mantine/core";
 
 import { DisabledNextButtonTooltip, Logo } from "@ui/index.ts";
 
+import { useIsDesktop } from "@hooks/common";
+
 import { isRetrieveRoutingProblemUnsolvable, TRetrieveRoutingProblem } from "@app/modules";
 
 import { TVehicleRoutingContext } from "@context/types.ts";
@@ -24,6 +26,7 @@ type TSidebar = {
 };
 
 export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedData }) => {
+  const isDesktop = useIsDesktop();
   const { activeTab, changeActiveTab, shipments, vehicles, getWarehouses, getDropOffs, locations } = useContext(
     VehicleRoutingContext,
   ) as TVehicleRoutingContext;
@@ -45,22 +48,8 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
     [locations, shipments, vehicles, submittedData],
   );
   return (
-    <Tabs
-      flex={2.2}
-      miw={500}
-      h="100dvh"
-      value={activeTab}
-      onChange={(value) => changeActiveTab(value as ActiveTabs)}
-      display="flex"
-      component="aside"
-      style={{
-        flexDirection: "column",
-        zIndex: 10,
-        boxShadow: "3px 0 10px -8px #000",
-        backgroundColor: "var(--bg-sidebar)",
-      }}
-    >
-      <Stack p={16}>
+    <Tabs value={activeTab} onChange={(value) => changeActiveTab(value as ActiveTabs)}>
+      <Stack p={isDesktop ? 16 : 0}>
         <Logo />
         <Tabs.List grow>
           <Tabs.Tab value={ActiveTabs.LOCATIONS_WAREHOUSES}>1. Склади</Tabs.Tab>
@@ -78,7 +67,7 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
           </Tabs.Tab>
         </Tabs.List>
       </Stack>
-      <Stack gap={24} flex={1} p={16} pt={0} style={{ overflow: "scroll" }}>
+      <Stack gap={24} flex={1} p={isDesktop ? 16 : 0} pt={isDesktop ? 0 : 16} style={{ overflowY: "scroll" }}>
         <Tabs.Panel value={ActiveTabs.LOCATIONS_WAREHOUSES}>
           <Locations locationType={LocationType.WAREHOUSE} />
         </Tabs.Panel>

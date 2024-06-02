@@ -9,12 +9,21 @@ type TAddressAutofill = {
   onRetrieve: (res: Feature) => void;
 };
 
+const theme = {
+  variables: {
+    borderRadius: "4.57px",
+    border: "1px solid #ced4da",
+    boxShadow: "none",
+  },
+};
+
 export const AddressAutofill = forwardRef<HTMLInputElement, TAddressAutofill>((props, reference) => {
   const [inputValue, setInputValue] = useState("");
   return (
     //@ts-ignore
     <Geocoder
       {...props}
+      theme={theme}
       ref={reference}
       accessToken={MAPB0X_TOKEN}
       options={{
