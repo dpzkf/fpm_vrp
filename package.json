@@ -17,6 +17,7 @@
     "@mantine/modals": "^7.10.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
     "@mapbox/polyline": "^1.2.1",
+    "@mapbox/search-js-react": "^1.0.0-beta.21",
     "@reduxjs/toolkit": "^2.0.1",
     "@tabler/icons-react": "^2.44.0",
     "@tanstack/react-table": "^8.11.2",

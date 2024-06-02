@@ -52,7 +52,13 @@ export const Sidebar: FC<TSidebar> = ({ solution, handleFindSolution, submittedD
       value={activeTab}
       onChange={(value) => changeActiveTab(value as ActiveTabs)}
       display="flex"
-      style={{ flexDirection: "column", zIndex: 10, boxShadow: "3px 0 10px -8px #000" }}
+      component="aside"
+      style={{
+        flexDirection: "column",
+        zIndex: 10,
+        boxShadow: "3px 0 10px -8px #000",
+        backgroundColor: "var(--bg-sidebar)",
+      }}
     >
       <Stack p={16}>
         <Logo />

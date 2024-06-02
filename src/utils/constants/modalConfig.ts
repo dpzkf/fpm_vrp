@@ -2,11 +2,11 @@ import { FC } from "react";
 
 import { ContextModalProps } from "@mantine/modals";
 
-import { EditLocation, ShipmentsModal, VehiclesModal } from "@components/Modals";
+import { LocationsModal, ShipmentsModal, VehiclesModal } from "@components/Modals";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MODAL_CONFIG: Record<string, FC<ContextModalProps<any>>> = {
-  editLocation: EditLocation,
+  locationsModal: LocationsModal,
   shipmentsModal: ShipmentsModal,
   vehiclesModal: VehiclesModal,
 };

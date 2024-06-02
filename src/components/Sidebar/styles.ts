@@ -9,3 +9,9 @@ export const ButtonWrapper = styled.div`
 
   border-top: 1px solid #ddd;
 `;
+
+export const HintWrapper = styled.div`
+  border-radius: 8px;
+  padding: 4px 8px;
+  background-color: color-mix(in srgb, var(--primary-color) 25%, var(--bg-sidebar));
+`;

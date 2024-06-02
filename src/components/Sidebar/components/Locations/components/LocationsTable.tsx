@@ -23,7 +23,7 @@ export const LocationsTable: FC<TLocationsTable> = ({ data }) => {
             variant="subtle"
             onClick={() => {
               openContextModal({
-                modal: "editLocation",
+                modal: "locationsModal",
                 innerProps: {
                   locations,
                   locationId: id,

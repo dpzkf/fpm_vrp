@@ -19,7 +19,7 @@ type TEditLocation = {
   updateLocation: (id: string, location: Partial<TLocation>) => void;
 };
 
-export const EditLocation: FC<ContextModalProps<TEditLocation>> = ({ id, context, innerProps }) => {
+export const LocationsModal: FC<ContextModalProps<TEditLocation>> = ({ id, context, innerProps }) => {
   const { updateLocation, locations, locationId } = innerProps;
   const location = useMemo(() => locations.find(({ id }) => locationId === id), []);
   const defaultValues: Partial<TLocation> = useMemo(
