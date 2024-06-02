@@ -1,5 +1,6 @@
 import { TLocations, TShipments, TSubmitRouting, TVehicles } from "@app/modules";
 
+import { formatDateToISOString } from "@utils/helpers";
 import { TLocation } from "types";
 
 export const adaptSubmitData = (
@@ -21,7 +22,7 @@ export const adaptSubmitData = (
   const vehicles = vehiclesData.map(({ name, capacities, earliest_start, latest_end }) => ({
     name,
     capacities,
-    earliest_start,
+    earliest_start: earliest_start ? earliest_start : formatDateToISOString(new Date()),
     latest_end,
   }));
   return { version: 1, locations, shipments, vehicles };

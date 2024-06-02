@@ -20,7 +20,6 @@ export const formatISOStringToTime = (time?: string) => {
   return format(parsedTime, "HH:mm");
 };
 
-export const formatDateToTime = (time?: Date) => {
-  if (!time) return;
-  return format(time, "HH:mm");
+export const formatDateToISOString = (date: Date) => {
+  return formatISO(date, { representation: "complete" });
 };
