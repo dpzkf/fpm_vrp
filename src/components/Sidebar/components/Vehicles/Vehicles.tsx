@@ -24,7 +24,9 @@ export const Vehicles = () => {
         <Text c="var(--primary-color)">Виберіть необхідну кількість транспортних засобів</Text>
       </Styled.HintWrapper>
       <Group justify="space-between">
-        <Text fw={500}>Автомобілі</Text>
+        <Text fw={500} textSize={18}>
+          Автомобілі
+        </Text>
         <Button
           variant="white"
           onClick={() => {
